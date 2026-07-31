@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
-import { AlertCircle, ArrowRight, HeartPulse, History, Sparkles } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 
 import { ClinicalSummary } from "@/components/ClinicalSummary";
@@ -62,26 +62,13 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen">
-      <header className="sticky top-0 z-40 border-b border-border/60 bg-background/70 backdrop-blur-xl">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4">
-          <div className="flex items-center gap-3">
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-[10px] bg-gradient-to-br from-teal-400 to-teal-600 shadow-md shadow-teal-600/30">
-              <HeartPulse className="size-4.5 text-white" />
-            </span>
-            <div className="flex items-baseline gap-2">
-              <h1 className="font-heading text-lg font-bold tracking-tight">DoctorSHAP</h1>
-              <span className="hidden text-sm text-muted-foreground sm:inline">
-                risk score + factor attribution
-              </span>
-            </div>
-          </div>
-          <ThemeToggle />
-        </div>
-      </header>
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="fixed right-4 top-4 z-50 sm:right-6 sm:top-6">
+        <ThemeToggle />
+      </div>
 
-      <main className="mx-auto grid max-w-6xl items-start gap-6 px-4 py-8 lg:grid-cols-[400px_minmax(0,1fr)]">
-        <div className="space-y-4 lg:sticky lg:top-20">
+      <main className="mx-auto grid w-full max-w-6xl gap-6 px-4 py-8 lg:grid-cols-[400px_minmax(0,1fr)]">
+        <div className="space-y-4 lg:sticky lg:top-8">
           <PatientIntake
             note={note}
             onNoteChange={setNote}
@@ -93,8 +80,7 @@ export default function Home() {
 
           {history.length > 0 && (
             <div className="space-y-2 px-1">
-              <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/90">
-                <History className="size-3.5" />
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/90">
                 This session
               </p>
               <div className="flex flex-wrap gap-1.5">
@@ -121,39 +107,32 @@ export default function Home() {
           )}
         </div>
 
-        <div className="space-y-6">
+        <div className="flex h-full flex-col space-y-6">
           {showEmpty && (
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
-              className="relative overflow-hidden rounded-[calc(var(--radius)+6px)] border border-dashed px-6 py-12 text-center"
+              className="flex-1"
             >
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-x-0 -top-20 mx-auto size-56 rounded-full opacity-60 blur-3xl"
-                style={{ background: "color-mix(in srgb, var(--brand) 16%, transparent)" }}
-              />
-              <div className="relative">
-                <span className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-[color-mix(in_srgb,var(--brand)_12%,transparent)]">
-                  <Sparkles className="size-6 text-[var(--brand-ink)]" />
-                </span>
-                <h2 className="mt-4 font-heading text-xl font-semibold tracking-tight">
-                  Ready when you are
-                </h2>
-                <p className="mx-auto mt-1.5 max-w-sm text-sm text-muted-foreground">
-                  Write a clinical note on the left, or start with a sample patient to see the
-                  score, attribution charts and summary.
-                </p>
-                <button
-                  type="button"
-                  onClick={runExample}
-                  className="group mt-5 inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-teal-500 to-teal-600 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-teal-600/25 transition-all hover:shadow-teal-600/40 active:scale-[0.97] dark:from-teal-400 dark:to-teal-500 dark:text-slate-900"
-                >
-                  Try the high-risk example
-                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-                </button>
-              </div>
+              <Card className="relative flex h-full min-h-72 flex-col items-center justify-center overflow-hidden border-border/70 px-6 py-12 text-center shadow-soft">
+                <div className="relative">
+                  <h2 className="font-heading text-xl font-semibold tracking-tight">
+                    Ready when you are
+                  </h2>
+                  <p className="mx-auto mt-1.5 max-w-sm text-sm text-muted-foreground">
+                    Write a clinical note on the left, or start with a sample patient to see the
+                    score, attribution charts and summary.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={runExample}
+                    className="mt-5 inline-flex items-center rounded-full border border-white/10 bg-[#d6d3cd] px-5 py-2.5 text-sm font-medium text-[#171717] transition-colors hover:bg-[#e7e5e4] active:bg-[#c7c4be]"
+                  >
+                    Try the high-risk example
+                  </button>
+                </div>
+              </Card>
             </motion.div>
           )}
 
@@ -197,7 +176,7 @@ export default function Home() {
                 </motion.div>
 
                 <motion.div variants={sectionVariants}>
-                  <Card className="lift border-border/70 shadow-soft">
+                  <Card className="border-border/70 shadow-soft">
                     <CardHeader>
                       <CardTitle className="font-heading text-xl font-semibold tracking-tight">Attribution</CardTitle>
                       <CardDescription>
@@ -238,7 +217,7 @@ export default function Home() {
                   </Card>
                 </motion.div>
 
-                <motion.div variants={sectionVariants} className="grid gap-6 xl:grid-cols-2">
+                <motion.div variants={sectionVariants} className="grid gap-6">
                   <ExtractedProfile factors={current.factors} />
                   <ClinicalSummary summary={current.summary} />
                 </motion.div>

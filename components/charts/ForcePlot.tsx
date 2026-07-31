@@ -63,26 +63,42 @@ export function ForcePlot({ assessment }: { assessment: Assessment }) {
           ← lowers the score
         </text>
 
-        <g clipPath={`url(#${uid}-bar)`}>
+        <g
+          clipPath={`url(#${uid}-bar)`}
+          onMouseLeave={() => setActive(null)}
+        >
           {segments.map((s, i) => {
             const up = s.v > 0;
             const isActive = active?.f.name === s.f.name;
+            const dimmed = active !== null && !isActive;
             return (
-              <motion.g
-                key={`${s.f.name}-${i}`} tabIndex={0}
+              <g
+                key={`${s.f.name}-${i}`}
+                tabIndex={0}
                 className="cursor-pointer outline-none"
-                onMouseEnter={() => setActive(s)} onMouseLeave={() => setActive(null)}
-                onFocus={() => setActive(s)} onBlur={() => setActive(null)}
-                role="img" aria-label={`${s.f.name}: ${s.f.impact}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: active === null || isActive ? 1 : 0.4 }}
-                transition={{ duration: 0.3, delay: 0.05 + i * 0.045 }}
+                onMouseEnter={() => setActive(s)}
+                onFocus={() => setActive(s)}
+                onBlur={() => setActive(null)}
+                role="img"
+                aria-label={`${s.f.name}: ${s.f.impact}`}
+                style={{
+                  opacity: dimmed ? 0.4 : 1,
+                  transition: "opacity 120ms ease",
+                }}
               >
-                <title>{s.f.impact}</title>
-                <rect x={s.x} y={barY} width={s.w} height={barH}
-                      fill={up ? "var(--risk-up)" : "var(--risk-down)"}
-                      stroke="var(--card)" strokeWidth="2.5" />
-              </motion.g>
+                <motion.rect
+                  x={s.x}
+                  y={barY}
+                  width={s.w}
+                  height={barH}
+                  fill={up ? "var(--risk-up)" : "var(--risk-down)"}
+                  stroke="var(--card)"
+                  strokeWidth="2.5"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3, delay: 0.05 + i * 0.045 }}
+                />
+              </g>
             );
           })}
         </g>
@@ -109,7 +125,7 @@ export function ForcePlot({ assessment }: { assessment: Assessment }) {
         </motion.g>
       </svg>
 
-      <p className="min-h-10 text-sm text-muted-foreground">
+      <p className="h-12 overflow-hidden text-sm leading-relaxed text-muted-foreground">
         {active ? (
           <>
             <b className="capitalize text-foreground">{active.f.name}</b>

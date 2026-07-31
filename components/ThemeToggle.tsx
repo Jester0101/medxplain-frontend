@@ -12,14 +12,14 @@ export function ThemeToggle() {
   useEffect(() => setMounted(true), []);
 
   if (!mounted) {
-    return <Button variant="outline" size="icon" aria-hidden className="rounded-full opacity-0" />;
+    return <Button variant="outline" size="icon" aria-hidden className="rounded-full opacity-0 shadow-soft" />;
   }
   const isDark = resolvedTheme === "dark";
   return (
     <Button
       variant="outline"
       size="icon"
-      className="relative overflow-hidden rounded-full transition-all active:scale-90"
+      className="relative overflow-hidden rounded-full bg-background/80 shadow-soft backdrop-blur-xl transition-all hover:scale-105 active:scale-90"
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       onClick={() => setTheme(isDark ? "light" : "dark")}
     >

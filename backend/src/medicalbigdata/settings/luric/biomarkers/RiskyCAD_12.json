@@ -1,0 +1,27 @@
+{
+    "lab_markers": {
+      "ldlch": {"name": "LDL-C", "unit": "mg/dL", "decimals": 0, "group": "lipids"},
+      "hdlch": {"name": "HDL-C", "unit": "mg/dL", "decimals": 0, "group": "lipids"},
+      "hba1c": {"name": "HbA1c", "unit": "%", "decimals": 1, "group": "diabetes"},
+      "cotinine": {"name": "cotinine", "unit": "ng/mL", "decimals": 1, "group": "smoking"},
+      "cystatc": {"name": "cystatin C", "unit": "mg/L", "decimals": 1, "group": "renal"},
+      "vitd25": {"name": "vitamin D", "unit": "μg/L", "decimals": 1, "group": "lifestyle"},
+      "pbnpl1": {"name": "NT-proBNP", "unit": "ng/ml", "decimals": 1, "group": "cardiac"},
+      "Troponin_T_Graz": {"name": "troponin T", "unit": "μg/L", "decimals": 2, "group": "cardiac"},
+      "Galectin3": {"name": "galectin-3", "unit": "ng/mL", "decimals": 1, "group": "fibrosis"},
+      "st2": {"name": "ST2", "unit": "U/mL", "decimals": 1, "group": "inflammation"},
+      "crp": {"name": "CRP", "unit": "mg/dL", "decimals": 1, "group": "inflammation"},
+      "fibrinog": {"name": "fibrinogen", "unit": "mg/dL", "decimals": 0, "group": "inflammation"}
+    },
+    "comorbidities": {},
+    "group_descriptions": {
+      "lipids": "Lipid panel",
+      "diabetes": "Glucose metabolism",
+      "smoking": "Smoking status",
+      "renal": "Kidney function",
+      "lifestyle": "Lifestyle markers",
+      "cardiac": "Cardiac function",
+      "fibrosis": "Cardiac remodeling",
+      "inflammation": "Chronic inflammation"
+    }
+  }

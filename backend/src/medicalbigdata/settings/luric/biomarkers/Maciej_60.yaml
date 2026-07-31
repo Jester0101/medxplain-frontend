@@ -1,0 +1,400 @@
+# Biomarker Configuration for Mortality Prediction
+# Format: column_name: {display_name, unit, decimal_places}
+
+lab_markers:
+  # ============================================================================
+  # Cardiac stress (Tier 1)
+  # ============================================================================
+  pbnpl1:
+    name: NT-proBNP
+    unit: ng/ml
+    decimals: 1
+    tier: 1
+    description: N-terminal pro b-type natriuretic peptide - heart failure marker
+  
+  tropt:
+    name: troponin T
+    unit: μg/L
+    decimals: 2
+    tier: 1
+    description: Cardiac troponin T - myocardial injury marker
+
+  # ============================================================================
+  # Inflammation (Tier 1)
+  # ============================================================================
+  il6:
+    name: IL-6
+    unit: ng/L
+    decimals: 1
+    tier: 1
+    description: Interleukin-6 - pro-inflammatory cytokine
+  
+  il6sens:
+    name: IL-6 sensitive
+    unit: ng/L
+    decimals: 1
+    tier: 1
+    description: High-sensitivity IL-6 assay
+  
+  crp:
+    name: CRP
+    unit: mg/dL
+    decimals: 1
+    tier: 1
+    description: C-reactive protein - acute phase reactant
+  
+  tnf:
+    name: TNF-α
+    unit: ng/L
+    decimals: 1
+    tier: 1
+    description: Tumor necrosis factor alpha - inflammatory cytokine
+
+  # ============================================================================
+  # Fibrosis/remodeling (Tier 1)
+  # ============================================================================
+  Galectin3:
+    name: galectin-3
+    unit: ng/mL
+    decimals: 1
+    tier: 1
+    description: Marker of cardiac fibrosis and remodeling
+    note: "FIXME: galectin3 → Galectin3"
+  
+  st2:
+    name: soluble ST2
+    unit: U/mL
+    decimals: 1
+    tier: 1
+    description: IL-33 receptor - cardiac stress and remodeling marker
+
+  # ============================================================================
+  # Hemostatic (Tier 2)
+  # ============================================================================
+  ddimer:
+    name: D-dimer
+    unit: mg/L
+    decimals: 1
+    tier: 2
+    description: Fibrin degradation product - thrombosis indicator
+  
+  fibrinog:
+    name: fibrinogen
+    unit: mg/dL
+    decimals: 0
+    tier: 2
+    description: Coagulation factor and inflammatory marker
+  
+  paiact:
+    name: PAI-1 activity
+    unit: U/mL
+    decimals: 1
+    tier: 2
+    description: Plasminogen activator inhibitor-1 - fibrinolysis inhibitor
+
+  # ============================================================================
+  # Neurohormonal (Tier 2)
+  # ============================================================================
+  renin:
+    name: renin
+    unit: U/L
+    decimals: 1
+    tier: 2
+    description: RAAS activation marker
+  
+  aldost:
+    name: aldosterone
+    unit: ng/L
+    decimals: 0
+    tier: 2
+    description: Mineralocorticoid hormone
+  
+  homocys:
+    name: homocysteine
+    unit: μmol/L
+    decimals: 1
+    tier: 2
+    description: Cardiovascular risk marker
+
+  # ============================================================================
+  # Top-20 predictors
+  # ============================================================================
+  cystatc:
+    name: cystatin C
+    unit: mg/L
+    decimals: 1
+    description: GFR marker independent of muscle mass
+  
+  albumin:
+    name: albumin
+    unit: g/dL
+    decimals: 1
+    description: Nutritional status and liver function
+  
+  hba1c:
+    name: HbA1c
+    unit: '%'
+    decimals: 1
+    description: Glycated hemoglobin - diabetes control marker
+  
+  gluc0:
+    name: glucose
+    unit: mg/dL
+    decimals: 0
+    description: Fasting blood glucose
+  
+  urea:
+    name: BUN
+    unit: mg/dL
+    decimals: 0
+    description: Blood urea nitrogen - kidney function marker
+    note: "FIXME: bun → urea"
+  
+  crea:
+    name: creatinine
+    unit: mg/dL
+    decimals: 1
+    description: Serum creatinine - kidney function marker
+    note: "FIXME: creat → crea"
+  
+  calcium:
+    name: calcium
+    unit: mmol/L
+    decimals: 1
+    description: Bone metabolism and cardiac function
+    note: "FIXME: unit mg/dL → mmol/L"
+  
+  po4:
+    name: phosphate
+    unit: mg/dL
+    decimals: 1
+    description: Bone metabolism and cellular energy
+    note: "FIXME: phos → po4, phosphorus → phosphate"
+  
+  totbili:
+    name: bilirubin
+    unit: mg/dL
+    decimals: 1
+    description: Liver function and hemolysis marker
+    note: "FIXME: bili → totbili"
+  
+  uricacid:
+    name: uric acid
+    unit: mg/dL
+    decimals: 1
+    description: Gout and cardiovascular risk marker
+    note: "FIXME: uric → uricacid"
+  
+  ldh:
+    name: LDH
+    unit: U/L
+    decimals: 0
+    description: Lactate dehydrogenase - tissue damage marker
+  
+  sgot:
+    name: AST (SGOT)
+    unit: U/L
+    decimals: 0
+    description: Aspartate aminotransferase - liver/cardiac injury
+    note: "FIXME: ast → sgot"
+  
+  sgpt:
+    name: ALT (SGPT)
+    unit: U/L
+    decimals: 0
+    description: Alanine aminotransferase - hepatocellular injury
+    note: "FIXME: alt → sgpt"
+  
+  ap:
+    name: alkaline phosphatase
+    unit: U/L
+    decimals: 0
+    description: Cholestatic liver disease and bone turnover
+    note: "FIXME: alkphos → ap"
+  
+  totprot:
+    name: total protein
+    unit: g/dL
+    decimals: 1
+    description: Combined albumin and globulins
+    note: "FIXME: protein → totprot"
+  
+  sodium:
+    name: sodium
+    unit: mmol/L
+    decimals: 0
+    description: Primary extracellular cation
+    note: "FIXME: unit mEq/L → mmol/L"
+  
+  potass:
+    name: potassium
+    unit: mmol/L
+    decimals: 1
+    description: Primary intracellular cation - cardiac rhythm
+    note: "FIXME: potassium → potass, unit mEq/L → mmol/L"
+  
+  magnes:
+    name: magnesium
+    unit: mmol/L
+    decimals: 1
+    description: Cardiac rhythm and muscle function
+    note: "FIXME: magnesium → magnes, unit mg/dL → mmol/L"
+  
+  # Note: chloride, co2, wbc not in LURIC - removed
+
+  # ============================================================================
+  # Optional lipids
+  # ============================================================================
+  chol:
+    name: cholesterol
+    unit: mg/dL
+    decimals: 0
+    description: Total cholesterol
+  
+  hdlch:
+    name: HDL-cholesterol
+    unit: mg/dL
+    decimals: 0
+    description: High-density lipoprotein cholesterol
+  
+  ldlch:
+    name: LDL-cholesterol
+    unit: mg/dL
+    decimals: 0
+    description: Low-density lipoprotein cholesterol
+  
+  tg:
+    name: triglycerides
+    unit: mg/dL
+    decimals: 0
+    description: Serum triglycerides
+
+  # ============================================================================
+  # Strong mortality predictors
+  # ============================================================================
+  mdrdalt:
+    name: eGFR
+    unit: mL/min/1.73m²
+    decimals: 0
+    description: Estimated glomerular filtration rate (MDRD)
+    note: "FIXME: eGFR → mdrdalt"
+  
+  hb:
+    name: hemoglobin
+    unit: g/dL
+    decimals: 1
+    description: Oxygen-carrying capacity
+    note: "FIXME: hgb → hb"
+  
+  platelet:
+    name: platelets
+    unit: /nL
+    decimals: 0
+    description: Platelet count (thrombocytes)
+    note: "FIXME: platelets → platelet, unit 10³/μL → /nL"
+  
+  inrquick:
+    name: INR
+    unit: ''
+    decimals: 2
+    description: International normalized ratio - warfarin monitoring
+    note: "FIXME: inr → inrquick"
+  
+  aptt:
+    name: aPTT
+    unit: sec
+    decimals: 1
+    description: Activated partial thromboplastin time
+  
+  hklvef:
+    name: LVEF
+    unit: '%'
+    decimals: 0
+    description: Left ventricular ejection fraction
+    note: "FIXME: lvef → hklvef"
+  
+  nyha:
+    name: NYHA class
+    unit: ''
+    decimals: 0
+    description: New York Heart Association functional classification
+
+  # ============================================================================
+  # Vitamins
+  # ============================================================================
+  vitd25:
+    name: 25-OH vitamin D
+    unit: μg/L
+    decimals: 1
+    description: Vitamin D status marker
+    note: "FIXME: vitamin_d → vitd25"
+  
+  vitb12:
+    name: vitamin B12
+    unit: ng/L
+    decimals: 0
+    description: Cobalamin - anemia and neuropathy marker
+    note: "FIXME: b12 → vitb12, unit pg/mL → ng/L"
+  
+  folicac:
+    name: folate
+    unit: μg/L
+    decimals: 1
+    description: Folic acid - anemia and cardiovascular marker
+    note: "FIXME: folate → folicac"
+  
+  # Note: procalcitonin, lactate, cortisol not in LURIC - removed
+
+# ============================================================================
+# Comprehensive comorbidities
+# ============================================================================
+comorbidities:
+  dm1yn:
+    name: type-1 diabetes
+  
+  dm2yn:
+    name: type-2 diabetes
+  
+  hyptenyn:
+    name: hypertension
+  
+  cadyn:
+    name: CAD
+    description: coronary artery disease (CAD)
+  
+  strokeyn:
+    name: stroke/TIA
+  
+  pvdyn:
+    name: peripheral vascular disease (PVD)
+  
+  cmpyn:
+    name: cardiomyopathy
+  
+  vdyn:
+    name: valve disease
+  
+  rhythyn:
+    name: arrhythmia
+  
+  COPDyn:
+    name: chronic obstructive pulmonary disease (COPD)
+  
+  ASTHMAyn:
+    name: asthma
+  
+  canceryn:
+    name: cancer
+  
+  cvdanyyn:
+    name: cerebrovascular disease (CBVD)
+  
+  smoke:
+    name: smoking
+    
+  hfref_hfpef:
+    name: heart failure
+  
+  afibyn:
+    name: atrial fibrillation
+  

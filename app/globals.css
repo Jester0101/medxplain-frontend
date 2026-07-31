@@ -7,8 +7,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-space-grotesk);
+  --font-mono: var(--font-space-grotesk);
   --font-heading: var(--font-space-grotesk);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -117,10 +117,10 @@
   --sidebar-ring: oklch(0.551 0.027 264.364);
 }
 
-:root { --risk-up:#e11d48; --risk-down:#2563eb; --brand:#0d9488; }
+:root { --risk-up:#e11d48; --risk-down:#2563eb; --brand:#d6d3cd; }
 
 :root {
-  --brand-ink: #0d9488;
+  --brand-ink: #57534e;
   --background: oklch(0.985 0.002 247.858);
   --card: oklch(1 0 0);
   --radius: 1rem;
@@ -129,7 +129,7 @@
 .dark {
   --risk-up: #f43f5e;
   --risk-down: #3b82f6;
-  --brand-ink: #2dd4bf;
+  --brand-ink: #e7e5e4;
   --background: oklch(0.093 0.032 264.695);
   --card: oklch(0.156 0.038 264.695);
   --popover: oklch(0.156 0.038 264.695);
@@ -192,14 +192,6 @@ body {
     box-shadow:
       0 2px 6px rgb(0 0 0 / 0.4),
       0 30px 70px -20px rgb(0 0 0 / 0.7);
-  }
-  .lift {
-    transition:
-      transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .lift:hover {
-    transform: translateY(-2px);
   }
 }
 

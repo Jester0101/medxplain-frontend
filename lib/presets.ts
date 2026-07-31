@@ -1,9 +1,18 @@
-export const MODELS = [
+// Models that actually drive the request today (routed straight to Gemini, see lib/llm.ts).
+// Only list models confirmed to work on the free tier for the configured GEMINI_API_KEY —
+// e.g. gemini-2.5-pro/2.0-flash returned RESOURCE_EXHAUSTED (quota 0) for this project.
+export const ACTIVE_MODELS = ["gemini-2.5-flash"];
+
+// Kept for later (would need OPENROUTER_API_KEY + a matching OpenRouter model id to work).
+// Selecting one of these today silently falls back to the default Gemini model instead of failing.
+export const PLANNED_MODELS = [
   "google/medgemma-27b-it",
   "google/medgemma-4b-it",
   "m42-health/Llama3-Med42-8B",
   "meta-llama/Meta-Llama-3.1-8B-Instruct",
 ];
+
+export const MODELS = [...ACTIVE_MODELS, ...PLANNED_MODELS];
 
 export const PRESETS: { label: string; risk: "low" | "moderate" | "high"; note: string }[] = [
   { label: "Low", risk: "low",

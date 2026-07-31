@@ -8,6 +8,9 @@ export async function assess(req: AssessRequest): Promise<Assessment> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(req),
   });
-  if (!res.ok) throw new Error(`Assess failed: ${res.status}`);
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    throw new Error(body?.error ?? `Assess failed: ${res.status}`);
+  }
   return AssessmentSchema.parse(await res.json());
 }
