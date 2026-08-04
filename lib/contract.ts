@@ -33,6 +33,27 @@ export const AssessRequestSchema = z.object({
 });
 export type AssessRequest = z.infer<typeof AssessRequestSchema>;
 
+export const ChatPatientContextSchema = z.object({
+  patient_profile: z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()])),
+  risk_score: z.string(),
+  risk_drivers_positive: z.array(z.string()),
+  risk_drivers_negative: z.array(z.string()),
+  clinical_summary: z.string(),
+});
+export type ChatPatientContext = z.infer<typeof ChatPatientContextSchema>;
+
+export const ChatRequestSchema = z.object({
+  question: z.string().min(2).max(1000),
+  patient_context: ChatPatientContextSchema,
+});
+export type ChatRequest = z.infer<typeof ChatRequestSchema>;
+
+export const ChatResponseSchema = z.object({
+  answer: z.string(),
+  inScope: z.boolean(),
+});
+export type ChatResponse = z.infer<typeof ChatResponseSchema>;
+
 export function signedValue(f: Factor): number {
   if (typeof f.shapValue === "number") return f.shapValue;
   return f.direction === "up" ? f.importance : -f.importance;

@@ -64,35 +64,31 @@ export function RiskHero({ assessment }: { assessment: Assessment }) {
     <div
       className="relative overflow-hidden rounded-[calc(var(--radius)+6px)] border shadow-soft"
       style={{
-        background: `linear-gradient(135deg, color-mix(in srgb, ${color} 12%, var(--card)) 0%, var(--card) 55%)`,
-        borderColor: `color-mix(in srgb, ${color} 22%, transparent)`,
+        background: `color-mix(in srgb, ${color} 4%, var(--card))`,
+        borderColor: `color-mix(in srgb, ${color} 14%, var(--border))`,
       }}
     >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -right-16 -top-24 size-64 rounded-full blur-3xl"
-        style={{ background: `color-mix(in srgb, ${color} 22%, transparent)` }}
-      />
       <div className="relative flex flex-col items-center gap-8 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
         <div className="flex flex-col items-center text-center sm:items-start sm:text-left">
           <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
             1-year risk estimate
           </span>
           <div className="mt-1 flex items-end gap-1">
-            <span
-              className="font-heading text-[76px] font-bold leading-[0.9] tracking-tight tabular-nums sm:text-[92px]"
-              style={{ color }}
-            >
+            <span className="font-heading text-[76px] font-bold leading-[0.9] tracking-tight tabular-nums text-foreground sm:text-[92px]">
               {display}
             </span>
-            <span className="mb-2 text-4xl font-semibold" style={{ color }}>%</span>
+            <span className="mb-2 text-4xl font-semibold text-foreground">%</span>
           </div>
           <motion.div
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35 }}
-            className="mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium"
-            style={{ color, backgroundColor: `color-mix(in srgb, ${color} 14%, transparent)` }}
+            className="mt-3 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-medium"
+            style={{
+              color,
+              borderColor: `color-mix(in srgb, ${color} 22%, transparent)`,
+              backgroundColor: `color-mix(in srgb, ${color} 10%, transparent)`,
+            }}
           >
             <Icon className="size-4" />
             {label}
@@ -112,7 +108,7 @@ export function RiskHero({ assessment }: { assessment: Assessment }) {
                     className="stroke-slate-200/60 dark:stroke-slate-700/50" />
             <motion.circle
               cx="94" cy="94" r={r} fill="none" strokeWidth="12"
-              stroke={color} strokeLinecap="round"
+              stroke={`color-mix(in srgb, ${color} 68%, transparent)`} strokeLinecap="round"
               transform="rotate(-90 94 94)"
               initial={{ strokeDasharray: `0 ${c}` }}
               animate={{ strokeDasharray: `${filled} ${c - filled}` }}
@@ -120,7 +116,15 @@ export function RiskHero({ assessment }: { assessment: Assessment }) {
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <Icon className="size-7" style={{ color }} />
+            <div
+              className="flex size-11 items-center justify-center rounded-full border"
+              style={{
+                borderColor: `color-mix(in srgb, ${color} 28%, transparent)`,
+                backgroundColor: `color-mix(in srgb, ${color} 9%, var(--card))`,
+              }}
+            >
+              <Icon className="size-6" style={{ color: `color-mix(in srgb, ${color} 84%, var(--foreground))` }} />
+            </div>
             <span className="mt-1.5 text-xs text-muted-foreground">{label.replace(" risk", "")}</span>
           </div>
         </div>

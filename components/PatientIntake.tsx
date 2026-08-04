@@ -43,11 +43,11 @@ export function PatientIntake({
 
   return (
     <Card className="border-border/70 shadow-soft">
-      <CardHeader>
-        <CardTitle className="font-heading text-xl font-semibold tracking-tight">Patient intake</CardTitle>
+      <CardHeader className="px-7 pb-2 pt-7 sm:px-8">
+        <CardTitle className="font-heading text-2xl font-semibold tracking-tight">Patient intake</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-5">
-        <div className="space-y-1.5">
+      <CardContent className="space-y-6 px-7 pb-7 sm:space-y-7 sm:px-8 sm:pb-8">
+        <div className="space-y-2.5">
           <label
             htmlFor="model-select"
             className="text-[13px] font-medium text-muted-foreground"
@@ -83,7 +83,7 @@ export function PatientIntake({
           </Select>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           <label
             htmlFor="note-input"
             className="text-[13px] font-medium text-muted-foreground"
@@ -98,18 +98,18 @@ export function PatientIntake({
               if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && canSubmit) onAssess();
             }}
             placeholder="e.g. 62yo man with hypertension, LDL 160 mg/dL, HDL 40 mg/dL, current smoker…"
-            className="min-h-36 resize-y rounded-xl border-border/60 bg-background/50 text-[15px] leading-relaxed transition-shadow focus-visible:border-[var(--brand)] focus-visible:ring-4 focus-visible:ring-[color-mix(in_srgb,var(--brand)_18%,transparent)]"
+            className="min-h-[170px] resize-y rounded-xl border-border/60 bg-background/50 text-[15px] leading-7 transition-shadow focus-visible:border-[var(--brand)] focus-visible:ring-4 focus-visible:ring-[color-mix(in_srgb,var(--brand)_18%,transparent)] sm:min-h-[190px]"
           />
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2.5 pt-1">
           <span className="text-xs text-muted-foreground">Examples:</span>
           {PRESETS.map((p) => (
             <button
               key={p.label}
               type="button"
               onClick={() => onNoteChange(p.note)}
-              className="inline-flex items-center gap-2 rounded-full border bg-background px-3.5 py-1.5 text-sm font-normal transition-all hover:bg-muted/70 active:scale-[0.96] focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+              className="inline-flex min-h-9 items-center gap-2 rounded-full border bg-background px-4 py-2 text-sm font-normal transition-all hover:bg-muted/70 active:scale-[0.96] focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
             >
               <span aria-hidden className={`size-2 rounded-full ${PRESET_DOT[p.risk]}`} />
               {p.label}
@@ -120,7 +120,7 @@ export function PatientIntake({
         <Button
           type="button"
           size="lg"
-          className="w-full border border-white/10 bg-[#d6d3cd] text-[15px] text-[#171717] shadow-none transition-colors hover:bg-[#e7e5e4] active:bg-[#c7c4be] disabled:border-transparent disabled:bg-slate-300 disabled:text-slate-500 dark:disabled:bg-slate-700 dark:disabled:text-slate-400"
+          className="h-12 w-full border border-white/10 bg-[#d6d3cd] text-[15px] font-medium text-[#171717] shadow-none transition-colors hover:bg-[#e7e5e4] active:bg-[#c7c4be] disabled:border-transparent disabled:bg-slate-300 disabled:text-slate-500 dark:disabled:bg-slate-700 dark:disabled:text-slate-400"
           disabled={!canSubmit}
           onClick={onAssess}
         >
