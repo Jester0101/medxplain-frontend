@@ -53,7 +53,13 @@ export function RiskCard({ assessment }: { assessment: Assessment }) {
   const filled = c * Math.min(1, Math.max(0, risk));
 
   return (
-    <Card className="h-full shadow-md shadow-slate-900/[0.04] dark:shadow-black/20">
+    <Card
+      className="h-full shadow-md shadow-slate-900/[0.04] dark:shadow-black/20"
+      style={{
+        backgroundColor: `color-mix(in srgb, ${color} 4%, var(--card))`,
+        borderColor: `color-mix(in srgb, ${color} 14%, var(--border))`,
+      }}
+    >
       <CardHeader>
         <CardTitle className="text-lg">Risk score</CardTitle>
       </CardHeader>
@@ -65,15 +71,14 @@ export function RiskCard({ assessment }: { assessment: Assessment }) {
                     className="stroke-slate-200/70 dark:stroke-slate-700/60" />
             <circle
               cx="80" cy="80" r={r} fill="none" strokeWidth="11"
-              stroke={color} strokeLinecap="round"
+              stroke={`color-mix(in srgb, ${color} 68%, transparent)`} strokeLinecap="round"
               strokeDasharray={`${filled} ${c - filled}`}
               transform="rotate(-90 80 80)"
               style={{ transition: "stroke-dasharray 900ms cubic-bezier(0.22,1,0.36,1)" }}
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-[40px] font-semibold leading-none tracking-tight tabular-nums"
-                  style={{ color }}>
+            <span className="text-[40px] font-semibold leading-none tracking-tight tabular-nums text-foreground">
               {display}%
             </span>
             <span className="mt-1 text-[11px] text-muted-foreground">1-year estimate</span>
@@ -81,8 +86,12 @@ export function RiskCard({ assessment }: { assessment: Assessment }) {
         </div>
         <Badge
           variant="outline"
-          className="gap-1.5 border-transparent px-2.5 py-1 font-medium"
-          style={{ color, backgroundColor: `color-mix(in srgb, ${color} 12%, transparent)` }}
+          className="gap-1.5 px-2.5 py-1 font-medium"
+          style={{
+            color,
+            borderColor: `color-mix(in srgb, ${color} 22%, transparent)`,
+            backgroundColor: `color-mix(in srgb, ${color} 10%, transparent)`,
+          }}
         >
           <Icon className="size-3.5" />
           {label}
