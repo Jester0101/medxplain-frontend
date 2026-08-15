@@ -77,7 +77,7 @@ RISK_MODEL_URL=http://localhost:8000
 
 `/api/assess` in the Next.js app checks this service first (via `lib/predictClient.ts`). If
 it's reachable and `model_loaded` is true, the response uses the real trained model + SHAP
-factors. Otherwise it transparently falls back to the existing Gemini/OpenRouter-only
+factors. Otherwise it transparently falls back to the existing Gemini-only
 estimate (see `lib/llm.ts`) — no code changes needed on either side when you go from
 "not trained yet" to "trained".
 
