@@ -12,8 +12,8 @@ function riskValueOf(a: Assessment): number {
 }
 
 const LEVELS = {
-  low: { label: "Low risk", color: "var(--brand)", Icon: CircleCheck },
-  moderate: { label: "Moderate risk", color: "#d97706", Icon: TriangleAlert },
+  low: { label: "Low risk", color: "var(--risk-low)", Icon: CircleCheck },
+  moderate: { label: "Moderate risk", color: "var(--risk-mid)", Icon: TriangleAlert },
   high: { label: "High risk", color: "var(--risk-up)", Icon: OctagonAlert },
 } as const;
 
@@ -64,8 +64,8 @@ export function RiskHero({ assessment }: { assessment: Assessment }) {
     <div
       className="relative overflow-hidden rounded-[calc(var(--radius)+6px)] border shadow-soft"
       style={{
-        background: `color-mix(in srgb, ${color} 4%, var(--card))`,
-        borderColor: `color-mix(in srgb, ${color} 14%, var(--border))`,
+        background: `color-mix(in srgb, ${color} 2.5%, var(--card))`,
+        borderColor: `color-mix(in srgb, ${color} 12%, var(--border))`,
       }}
     >
       <div className="relative flex flex-col items-center gap-8 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
@@ -74,7 +74,7 @@ export function RiskHero({ assessment }: { assessment: Assessment }) {
             1-year risk estimate
           </span>
           <div className="mt-1 flex items-end gap-1">
-            <span className="font-heading text-[76px] font-bold leading-[0.9] tracking-tight tabular-nums text-foreground sm:text-[92px]">
+            <span className="font-heading text-[76px] font-bold leading-[0.9] tracking-[-0.04em] text-foreground sm:text-[92px]">
               {display}
             </span>
             <span className="mb-2 text-4xl font-semibold text-foreground">%</span>
@@ -101,7 +101,7 @@ export function RiskHero({ assessment }: { assessment: Assessment }) {
           )}
         </div>
 
-        <div className="relative shrink-0">
+        <div className="relative hidden shrink-0 sm:block">
           <svg width="188" height="188" viewBox="0 0 188 188" role="img"
                aria-label={`Risk ${assessment.riskScore}, ${label}`}>
             <circle cx="94" cy="94" r={r} fill="none" strokeWidth="12"
@@ -125,7 +125,6 @@ export function RiskHero({ assessment }: { assessment: Assessment }) {
             >
               <Icon className="size-6" style={{ color: `color-mix(in srgb, ${color} 84%, var(--foreground))` }} />
             </div>
-            <span className="mt-1.5 text-xs text-muted-foreground">{label.replace(" risk", "")}</span>
           </div>
         </div>
       </div>

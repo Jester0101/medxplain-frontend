@@ -2,6 +2,7 @@ import type { Assessment } from "./contract";
 
 const PENDING_KEY = "medxplain.pendingAssessment";
 const LATEST_KEY = "medxplain.latestAssessment";
+const LATEST_NOTE_KEY = "medxplain.latestNote";
 
 export type PendingAssessment = { note: string; model: string };
 
@@ -45,6 +46,15 @@ export function getLatestAssessment(): Assessment | null {
 export function clearLatestAssessment(): void {
   if (typeof window === "undefined") return;
   window.sessionStorage.removeItem(LATEST_KEY);
+  window.sessionStorage.removeItem(LATEST_NOTE_KEY);
+}
+
+export function setLatestNote(note: string): void {
+  writeJson(LATEST_NOTE_KEY, note);
+}
+
+export function getLatestNote(): string {
+  return readJson<string>(LATEST_NOTE_KEY) ?? "";
 }
 
 export function resetAssessmentSession(): void {

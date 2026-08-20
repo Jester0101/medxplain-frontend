@@ -6,12 +6,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { MODELS, PRESETS } from '@/lib/presets'
+import { PRESETS } from '@/lib/presets'
+import type { ModelInfo } from '@/lib/contract'
 
 const PRESET_DOT: Record<'low' | 'moderate' | 'high', string> = {
   low: 'bg-emerald-500',
@@ -24,6 +27,7 @@ type Props = {
   onNoteChange: (note: string) => void
   model: string
   onModelChange: (model: string) => void
+  models: ModelInfo[]
   onAssess: () => void
   isPending: boolean
 }
@@ -33,10 +37,15 @@ export function PatientIntake({
   onNoteChange,
   model,
   onModelChange,
+  models,
   onAssess,
   isPending
 }: Props) {
   const canSubmit = note.trim().length > 0 && !isPending
+  const families = Array.from(
+    new Set(models.map(m => m.family ?? 'Models'))
+  )
+  const hasUnavailable = models.some(m => m.available === false)
 
   return (
     <Card className='border-border/70 shadow-soft'>
@@ -55,17 +64,35 @@ export function PatientIntake({
           <Select value={model} onValueChange={onModelChange}>
             <SelectTrigger
               id='model-select'
-              className='w-full rounded-xl transition-shadow focus-visible:border-[var(--brand)] focus-visible:ring-4 focus-visible:ring-[color-mix(in_srgb,var(--brand)_18%,transparent)]'>
+              className='w-full rounded-xl transition-shadow focus-visible:border-[color-mix(in_srgb,var(--focus)_55%,transparent)] focus-visible:ring-4 focus-visible:ring-[color-mix(in_srgb,var(--focus)_18%,transparent)]'>
               <SelectValue placeholder='Select a model' />
             </SelectTrigger>
             <SelectContent>
-              {MODELS.map(m => (
-                <SelectItem key={m} value={m}>
-                  {m}
-                </SelectItem>
+              {families.map(family => (
+                <SelectGroup key={family}>
+                  <SelectLabel className='text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/90'>
+                    {family}
+                  </SelectLabel>
+                  {models
+                    .filter(m => (m.family ?? 'Models') === family)
+                    .map(m => (
+                      <SelectItem
+                        key={m.id}
+                        value={m.id}
+                        disabled={m.available === false}
+                        title={m.note}>
+                        {m.label ?? m.id}
+                      </SelectItem>
+                    ))}
+                </SelectGroup>
               ))}
             </SelectContent>
           </Select>
+          {hasUnavailable && (
+            <p className='text-[12px] leading-relaxed text-muted-foreground'>
+              Greyed-out models become selectable once their backend is connected.
+            </p>
+          )}
         </div>
 
         <div className='space-y-2.5'>
@@ -83,7 +110,7 @@ export function PatientIntake({
                 onAssess()
             }}
             placeholder='e.g. 62yo man with hypertension, LDL 160 mg/dL, HDL 40 mg/dL, current smoker…'
-            className='min-h-[170px] resize-y rounded-xl border-border/60 bg-background/50 text-[15px] leading-7 transition-shadow focus-visible:border-[var(--brand)] focus-visible:ring-4 focus-visible:ring-[color-mix(in_srgb,var(--brand)_18%,transparent)] sm:min-h-[190px]'
+            className='min-h-[170px] resize-y rounded-xl border-border/60 bg-background/50 text-[15px] leading-7 transition-shadow focus-visible:border-[color-mix(in_srgb,var(--focus)_55%,transparent)] focus-visible:ring-4 focus-visible:ring-[color-mix(in_srgb,var(--focus)_18%,transparent)] sm:min-h-[190px]'
           />
         </div>
 

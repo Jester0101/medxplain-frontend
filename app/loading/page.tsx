@@ -10,6 +10,7 @@ import {
   clearPendingAssessment,
   getPendingAssessment,
   setLatestAssessment,
+  setLatestNote,
 } from "@/lib/assessmentSession";
 
 export default function LoadingPage() {
@@ -28,6 +29,7 @@ export default function LoadingPage() {
       .then((result) => {
         if (!mounted) return;
         setLatestAssessment(result);
+        setLatestNote(pending.note);
         clearPendingAssessment();
         router.replace("/results");
       })
@@ -55,30 +57,26 @@ export default function LoadingPage() {
       >
         {!error ? (
           <>
-            <motion.div
-              className="flex justify-center"
-              initial={{ opacity: 0.4, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.7, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
-            >
-              <Loader2 className="size-10 animate-spin text-blue-600" />
-            </motion.div>
+            <div className="flex justify-center">
+              <Loader2 className="size-9 animate-spin text-foreground/45" />
+            </div>
             <motion.p
-              className="text-sm text-muted-foreground"
+              className="text-[15px] text-muted-foreground"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.35, delay: 0.08 }}
             >
-              Analyzing cardiovascular risk...
+              Analysing cardiovascular risk…
             </motion.p>
           </>
         ) : (
           <div className="space-y-4">
-            <p className="text-sm text-[var(--risk-up)]">{error}</p>
+            <p className="text-[15px] font-medium">Assessment failed</p>
+            <p className="text-sm leading-relaxed text-muted-foreground">{error}</p>
             <button
               type="button"
               onClick={() => router.replace("/")}
-              className="inline-flex w-full items-center justify-center rounded-md border border-border/70 px-3 py-2 text-sm transition-colors hover:bg-muted/60"
+              className="inline-flex min-h-10 w-full items-center justify-center rounded-xl border border-border/70 px-4 py-2 text-sm transition-colors hover:bg-muted/60"
             >
               Back to input
             </button>

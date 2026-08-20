@@ -2,11 +2,13 @@
 import { useId } from "react";
 import { motion } from "framer-motion";
 import { signedValue, type Assessment } from "@/lib/contract";
+import { useMeasuredWidth } from "@/lib/useMeasuredWidth";
 
 const truncate = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
 
 export function RiskWaterfall({ assessment }: { assessment: Assessment }) {
   const uid = useId().replace(/[«»:]/g, "");
+  const { ref, width } = useMeasuredWidth<HTMLDivElement>(600);
   const base = assessment.baseValue ?? 0.06;
   const parsedScore = parseFloat(assessment.riskScore);
   const final =
@@ -31,10 +33,11 @@ export function RiskWaterfall({ assessment }: { assessment: Assessment }) {
     return { f, delta, from, to: cum };
   });
 
-  const W = 640;
-  const labelW = 168;
-  const rowH = 38;
-  const barH = 22;
+  const W = Math.max(260, Math.round(width));
+  const compact = W < 460;
+  const labelW = compact ? 92 : 168;
+  const rowH = compact ? 34 : 38;
+  const barH = compact ? 20 : 22;
   const topPad = 8;
   const axisH = 28;
   const n = steps.length;
@@ -54,9 +57,12 @@ export function RiskWaterfall({ assessment }: { assessment: Assessment }) {
   const axisTop = topPad + (n + 2) * rowH;
 
   return (
+    <div ref={ref}>
     <svg
       viewBox={`0 0 ${W} ${H}`}
-      className="h-auto w-full"
+      width={W}
+      height={H}
+      className="block max-w-full"
       role="img"
       aria-label={`Waterfall from baseline ${(base * 100).toFixed(0)}% to risk score ${assessment.riskScore}`}
     >
@@ -70,8 +76,8 @@ export function RiskWaterfall({ assessment }: { assessment: Assessment }) {
           <stop offset="1" stopColor="var(--risk-down)" />
         </linearGradient>
         <linearGradient id={`${uid}-final`} x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="var(--brand)" stopOpacity="0.8" />
-          <stop offset="1" stopColor="var(--brand)" />
+          <stop offset="0" stopColor="var(--brand-ink)" stopOpacity="0.72" />
+          <stop offset="1" stopColor="var(--brand-ink)" />
         </linearGradient>
       </defs>
 
@@ -79,10 +85,10 @@ export function RiskWaterfall({ assessment }: { assessment: Assessment }) {
         <g key={t}>
           <line
             x1={x(t)} y1={topPad} x2={x(t)} y2={axisTop - 4}
-            className="stroke-slate-100 dark:stroke-slate-800/70" strokeWidth="1"
+            stroke="color-mix(in srgb, var(--foreground) 8%, transparent)" strokeWidth="1"
           />
           <text x={x(t)} y={axisTop + 14} textAnchor="middle" fontSize="10"
-                className="fill-slate-400 dark:fill-slate-500">
+                fill="var(--muted-foreground)">
             {(t * 100).toFixed(0)}%
           </text>
         </g>
@@ -90,14 +96,14 @@ export function RiskWaterfall({ assessment }: { assessment: Assessment }) {
 
       <g>
         <text x={labelW - 12} y={rowY(0) + barH / 2 + 4} textAnchor="end" fontSize="12.5"
-              className="fill-slate-500 dark:fill-slate-400">
+              fill="var(--muted-foreground)">
           Base rate
         </text>
         <rect x={x(Math.min(0, base))} y={rowY(0)}
               width={Math.max(Math.abs(x(base) - x(0)), 3)} height={barH} rx="6"
-              className="fill-slate-300/90 dark:fill-slate-600/90" />
+              fill="color-mix(in srgb, var(--foreground) 22%, transparent)" />
         <text x={x(base) + 7} y={rowY(0) + barH / 2 + 4} fontSize="11" fontWeight="600"
-              className="fill-slate-500 dark:fill-slate-400 font-mono tabular-nums">
+              fill="var(--muted-foreground)" className="tabular-nums">
           {(base * 100).toFixed(0)}%
         </text>
       </g>
@@ -112,11 +118,11 @@ export function RiskWaterfall({ assessment }: { assessment: Assessment }) {
           <g key={`${s.f.name}-${i}`} tabIndex={0} className="outline-none focus-visible:opacity-80">
             <title>{s.f.impact}</title>
             <text x={labelW - 12} y={y + barH / 2 + 4} textAnchor="end" fontSize="12.5"
-                  className="fill-slate-700 dark:fill-slate-300">
-              {truncate(s.f.name, 22)}
+                  fill="color-mix(in srgb, var(--foreground) 78%, transparent)">
+              {truncate(s.f.name, compact ? 11 : 22)}
             </text>
             <line x1={x(s.from)} y1={y - rowH + barH} x2={x(s.from)} y2={y + barH}
-                  className="stroke-slate-200 dark:stroke-slate-700" strokeWidth="1" />
+                  stroke="color-mix(in srgb, var(--foreground) 14%, transparent)" strokeWidth="1" />
             <motion.rect
               y={y} height={barH} rx="6"
               fill={`url(#${uid}-${up ? "up" : "down"})`}
@@ -127,7 +133,7 @@ export function RiskWaterfall({ assessment }: { assessment: Assessment }) {
             <motion.text
               x={up ? x(s.to) + 7 : x(s.to) - 7} y={y + barH / 2 + 4}
               textAnchor={up ? "start" : "end"} fontSize="11.5" fontWeight="600" fill={color}
-              className="font-mono tabular-nums"
+              className="tabular-nums"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 + i * 0.05 }}
@@ -140,10 +146,11 @@ export function RiskWaterfall({ assessment }: { assessment: Assessment }) {
 
       <g>
         <line x1={x(final)} y1={rowY(n) + barH} x2={x(final)} y2={rowY(n + 1) + barH}
-              className="stroke-slate-200 dark:stroke-slate-700" strokeWidth="1" />
-        <text x={labelW - 12} y={rowY(n + 1) + barH / 2 + 4} textAnchor="end" fontSize="13"
-              fontWeight="700" className="fill-slate-900 dark:fill-slate-100">
-          Predicted risk
+              stroke="color-mix(in srgb, var(--foreground) 14%, transparent)" strokeWidth="1" />
+        <text x={labelW - 12} y={rowY(n + 1) + barH / 2 + 4} textAnchor="end"
+              fontSize={compact ? 12 : 13}
+              fontWeight="700" fill="var(--foreground)">
+          {compact ? "Predicted" : "Predicted risk"}
         </text>
         <motion.rect
           y={rowY(n + 1)} height={barH} rx="6"
@@ -162,5 +169,6 @@ export function RiskWaterfall({ assessment }: { assessment: Assessment }) {
         </motion.text>
       </g>
     </svg>
+    </div>
   );
 }

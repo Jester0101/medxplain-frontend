@@ -2,6 +2,7 @@
 import { useId, useState } from "react";
 import { motion } from "framer-motion";
 import { signedValue, type Assessment, type Factor } from "@/lib/contract";
+import { useMeasuredWidth } from "@/lib/useMeasuredWidth";
 
 const truncate = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
 
@@ -10,6 +11,7 @@ type Segment = { f: Factor; v: number; x: number; w: number };
 export function ForcePlot({ assessment }: { assessment: Assessment }) {
   const uid = useId().replace(/[«»:]/g, "");
   const [active, setActive] = useState<Segment | null>(null);
+  const { ref, width } = useMeasuredWidth<HTMLDivElement>(600);
 
   const factors = assessment.factors;
   const ups = factors.filter((f) => signedValue(f) > 0)
@@ -24,10 +26,11 @@ export function ForcePlot({ assessment }: { assessment: Assessment }) {
     return <p className="text-sm text-muted-foreground">No factors to display.</p>;
   }
 
-  const W = 640;
-  const H = 152;
-  const barY = 62;
-  const barH = 34;
+  const W = Math.max(260, Math.round(width));
+  const compact = W < 460;
+  const H = compact ? 138 : 152;
+  const barY = compact ? 52 : 62;
+  const barH = compact ? 30 : 34;
   const meet = (sumUp / total) * W;
 
   let cx = 0;
@@ -45,8 +48,8 @@ export function ForcePlot({ assessment }: { assessment: Assessment }) {
   const pillY = 14;
 
   return (
-    <div className="space-y-2">
-      <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" role="img"
+    <div className="space-y-2" ref={ref}>
+      <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} className="block max-w-full" role="img"
            aria-label={`Force plot: contributions meeting at predicted risk ${assessment.riskScore}`}>
         <defs>
           <clipPath id={`${uid}-bar`}>
@@ -55,12 +58,12 @@ export function ForcePlot({ assessment }: { assessment: Assessment }) {
         </defs>
 
         <circle cx={5} cy={barY - 12} r="3" fill="var(--risk-up)" />
-        <text x={13} y={barY - 8.5} fontSize="10.5" className="fill-slate-500 dark:fill-slate-400">
-          raises the score →
+        <text x={13} y={barY - 8.5} fontSize="11" fill="var(--muted-foreground)">
+          raises →
         </text>
-        <circle cx={W - 110} cy={barY - 12} r="3" fill="var(--risk-down)" />
-        <text x={W - 102} y={barY - 8.5} fontSize="10.5" className="fill-slate-500 dark:fill-slate-400">
-          ← lowers the score
+        <circle cx={W - 78} cy={barY - 12} r="3" fill="var(--risk-down)" />
+        <text x={W - 70} y={barY - 8.5} fontSize="11" fill="var(--muted-foreground)">
+          ← lowers
         </text>
 
         <g
@@ -106,8 +109,8 @@ export function ForcePlot({ assessment }: { assessment: Assessment }) {
         {segments.map((s, i) =>
           s.w > 62 ? (
             <text key={`lbl-${i}`} x={s.x + s.w / 2} y={barY + barH + 17} textAnchor="middle"
-                  fontSize="10.5" className="fill-slate-500 dark:fill-slate-400 capitalize">
-              {truncate(s.f.name, Math.floor(s.w / 6))}
+                  fontSize="11" fill="var(--muted-foreground)" className="capitalize">
+              {truncate(s.f.name, Math.floor(s.w / 6.5))}
             </text>
           ) : null
         )}
@@ -119,7 +122,7 @@ export function ForcePlot({ assessment }: { assessment: Assessment }) {
           <rect x={pillX} y={pillY} width={pillW} height="26" rx="13"
                 fill="var(--foreground)" />
           <text x={pillX + pillW / 2} y={pillY + 17.5} textAnchor="middle" fontSize="13"
-                fontWeight="700" fill="var(--background)" className="font-mono tabular-nums">
+                fontWeight="700" fill="var(--background)" className="tabular-nums">
             {pillText}
           </text>
         </motion.g>

@@ -1,18 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { BrandMark } from "@/components/BrandMark";
 import { PatientIntake } from "@/components/PatientIntake";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { listModels } from "@/lib/api";
 import { resetAssessmentSession, setPendingAssessment } from "@/lib/assessmentSession";
-import { MODELS } from "@/lib/presets";
+import { MODEL_CATALOGUE } from "@/lib/presets";
+import type { ModelInfo } from "@/lib/contract";
 
 export default function Home() {
   const router = useRouter();
   const [note, setNote] = useState("");
-  const [model, setModel] = useState(MODELS[0]);
+  const [models, setModels] = useState<ModelInfo[]>(MODEL_CATALOGUE);
+  const [model, setModel] = useState(MODEL_CATALOGUE[0].id);
   const [isNavigating, setIsNavigating] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    listModels().then((list) => {
+      if (!alive) return;
+      setModels(list);
+      const firstAvailable = list.find((m) => m.available !== false);
+      if (firstAvailable) setModel(firstAvailable.id);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const beginAssessment = (targetNote: string) => {
     if (!targetNote.trim()) return;
@@ -29,6 +46,10 @@ export default function Home() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.25 }}
     >
+      <div className="fixed left-4 top-4 z-50 sm:left-6 sm:top-6">
+        <BrandMark />
+      </div>
+
       <div className="fixed right-4 top-4 z-50 sm:right-6 sm:top-6">
         <ThemeToggle />
       </div>
@@ -45,6 +66,7 @@ export default function Home() {
             onNoteChange={setNote}
             model={model}
             onModelChange={setModel}
+            models={models}
             onAssess={() => beginAssessment(note)}
             isPending={isNavigating}
           />

@@ -54,6 +54,20 @@ export const ChatResponseSchema = z.object({
 });
 export type ChatResponse = z.infer<typeof ChatResponseSchema>;
 
+export const ModelInfoSchema = z.object({
+  id: z.string(),
+  label: z.string().optional(),
+  family: z.string().optional(),
+  available: z.boolean().optional(),
+  note: z.string().optional(),
+});
+export type ModelInfo = z.infer<typeof ModelInfoSchema>;
+
+export const ModelsResponseSchema = z.object({
+  models: z.array(ModelInfoSchema).min(1),
+});
+export type ModelsResponse = z.infer<typeof ModelsResponseSchema>;
+
 export function signedValue(f: Factor): number {
   if (typeof f.shapValue === "number") return f.shapValue;
   return f.direction === "up" ? f.importance : -f.importance;

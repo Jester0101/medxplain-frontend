@@ -121,6 +121,9 @@
 
 :root {
   --brand-ink: #57534e;
+  --risk-low: #57534e;
+  --risk-mid: #b45309;
+  --focus: #57534e;
   --background: oklch(0.985 0.002 247.858);
   --card: oklch(1 0 0);
   --radius: 1rem;
@@ -130,6 +133,9 @@
   --risk-up: #f43f5e;
   --risk-down: #3b82f6;
   --brand-ink: #e7e5e4;
+  --risk-low: #d6d3cd;
+  --risk-mid: #fbbf24;
+  --focus: #d6d3cd;
   --background: oklch(0.093 0.032 264.695);
   --card: oklch(0.156 0.038 264.695);
   --popover: oklch(0.156 0.038 264.695);
@@ -166,7 +172,11 @@ body {
     scroll-behavior: smooth;
   }
   ::selection {
-    background: color-mix(in oklab, var(--brand) 28%, transparent);
+    background: color-mix(in srgb, var(--foreground) 16%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--focus) 75%, transparent);
+    outline-offset: 2px;
   }
 }
 

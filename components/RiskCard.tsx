@@ -13,8 +13,8 @@ function riskValueOf(a: Assessment): number {
 }
 
 const LEVELS = {
-  low: { label: "Low risk", color: "var(--brand)", Icon: CircleCheck },
-  moderate: { label: "Moderate risk", color: "#d97706", Icon: TriangleAlert },
+  low: { label: "Low risk", color: "var(--risk-low)", Icon: CircleCheck },
+  moderate: { label: "Moderate risk", color: "var(--risk-mid)", Icon: TriangleAlert },
   high: { label: "High risk", color: "var(--risk-up)", Icon: OctagonAlert },
 } as const;
 

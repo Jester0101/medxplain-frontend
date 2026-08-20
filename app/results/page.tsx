@@ -4,20 +4,23 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { AssessmentChat } from "@/components/AssessmentChat";
+import { BrandMark } from "@/components/BrandMark";
 import { ClinicalSummary } from "@/components/ClinicalSummary";
+import { CohortBenchmark } from "@/components/CohortBenchmark";
 import { ExtractedProfile } from "@/components/ExtractedProfile";
 import { RiskHero } from "@/components/RiskHero";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { FactorBars } from "@/components/charts/FactorBars";
 import { ForcePlot } from "@/components/charts/ForcePlot";
+import { NoteAttribution } from "@/components/charts/NoteAttribution";
 import { RiskWaterfall } from "@/components/charts/RiskWaterfall";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { clearLatestAssessment, getLatestAssessment } from "@/lib/assessmentSession";
+import { clearLatestAssessment, getLatestAssessment, getLatestNote } from "@/lib/assessmentSession";
 import { type Assessment } from "@/lib/contract";
 
 const tabTriggerClass =
-  "data-[state=active]:text-[var(--brand-ink)] dark:data-[state=active]:text-[var(--brand-ink)]";
+  "data-[state=active]:text-foreground data-[state=active]:font-medium";
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 18 },
@@ -27,6 +30,7 @@ const sectionVariants = {
 export default function ResultsPage() {
   const router = useRouter();
   const [assessment, setAssessment] = useState<Assessment | null>(null);
+  const [note, setNote] = useState("");
 
   useEffect(() => {
     const cached = getLatestAssessment();
@@ -35,6 +39,7 @@ export default function ResultsPage() {
       return;
     }
     setAssessment(cached);
+    setNote(getLatestNote());
   }, [router]);
 
   if (!assessment) return null;
@@ -50,30 +55,32 @@ export default function ResultsPage() {
         <ThemeToggle />
       </div>
 
-      <main className="mx-auto w-full max-w-6xl px-4 pb-24 pt-8">
+      <main className="mx-auto w-full max-w-5xl px-4 pb-28 pt-8 sm:px-6">
         <motion.div
-          className="mb-4 flex justify-end"
+          className="mb-6 flex items-center justify-between gap-4"
           initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.22, delay: 0.04 }}
         >
+          <BrandMark />
           <motion.button
             type="button"
             onClick={() => {
               clearLatestAssessment();
               router.push("/");
             }}
-            className="inline-flex shrink-0 items-center rounded-full border border-border/70 px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
+            className="inline-flex min-h-9 shrink-0 items-center rounded-full border border-border/70 px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
             whileHover={{ y: -1 }}
             whileTap={{ scale: 0.98 }}
           >
             New assessment
           </motion.button>
         </motion.div>
+
         <AnimatePresence mode="popLayout">
           <motion.div
             key="results"
-            className="space-y-6"
+            className="space-y-7"
             initial="hidden"
             animate="show"
             exit={{ opacity: 0, y: 8 }}
@@ -85,22 +92,34 @@ export default function ResultsPage() {
 
             <motion.div variants={sectionVariants}>
               <Card className="border-border/70 shadow-soft">
-                <CardHeader>
-                  <CardTitle className="font-heading text-xl font-semibold tracking-tight">Attribution</CardTitle>
+                <CardHeader className="px-7 pt-7 sm:px-8">
+                  <CardTitle className="font-heading text-xl font-semibold tracking-tight">
+                    Attribution
+                  </CardTitle>
                   <CardDescription>
-                    <span className="font-medium" style={{ color: "var(--risk-up)" }}>
+                    Each factor moves the estimate up or down.{" "}
+                    <span
+                      className="font-medium"
+                      style={{ color: "color-mix(in srgb, var(--risk-up) 82%, var(--foreground))" }}
+                    >
                       Red raises
                     </span>{" "}
-                    the score,{" "}
-                    <span className="font-medium" style={{ color: "var(--risk-down)" }}>
+                    it,{" "}
+                    <span
+                      className="font-medium"
+                      style={{ color: "color-mix(in srgb, var(--risk-down) 82%, var(--foreground))" }}
+                    >
                       blue lowers
                     </span>{" "}
                     it.
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <Tabs defaultValue="waterfall">
-                    <TabsList className="grid w-full grid-cols-3">
+                <CardContent className="px-7 pb-7 sm:px-8 sm:pb-8">
+                  <Tabs defaultValue="text">
+                    <TabsList className="grid w-full grid-cols-4">
+                      <TabsTrigger value="text" className={tabTriggerClass}>
+                        Text
+                      </TabsTrigger>
                       <TabsTrigger value="waterfall" className={tabTriggerClass}>
                         Waterfall
                       </TabsTrigger>
@@ -108,16 +127,20 @@ export default function ResultsPage() {
                         Factors
                       </TabsTrigger>
                       <TabsTrigger value="force" className={tabTriggerClass}>
-                        Force plot
+                        <span className="sm:hidden">Force</span>
+                        <span className="hidden sm:inline">Force plot</span>
                       </TabsTrigger>
                     </TabsList>
-                    <TabsContent value="waterfall" className="pt-5">
+                    <TabsContent value="text" className="pt-6">
+                      <NoteAttribution note={note} factors={assessment.factors} />
+                    </TabsContent>
+                    <TabsContent value="waterfall" className="pt-6">
                       <RiskWaterfall assessment={assessment} />
                     </TabsContent>
-                    <TabsContent value="factors" className="pt-5">
+                    <TabsContent value="factors" className="pt-6">
                       <FactorBars factors={assessment.factors} />
                     </TabsContent>
-                    <TabsContent value="force" className="pt-5">
+                    <TabsContent value="force" className="pt-6">
                       <ForcePlot assessment={assessment} />
                     </TabsContent>
                   </Tabs>
@@ -125,9 +148,16 @@ export default function ResultsPage() {
               </Card>
             </motion.div>
 
-            <motion.div variants={sectionVariants} className="grid gap-6">
+            <motion.div
+              variants={sectionVariants}
+              className="grid items-start gap-7 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]"
+            >
               <ExtractedProfile factors={assessment.factors} />
               <ClinicalSummary summary={assessment.summary} />
+            </motion.div>
+
+            <motion.div variants={sectionVariants}>
+              <CohortBenchmark assessment={assessment} />
             </motion.div>
           </motion.div>
         </AnimatePresence>

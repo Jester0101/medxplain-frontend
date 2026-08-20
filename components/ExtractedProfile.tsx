@@ -25,13 +25,27 @@ function DeltaTag({ f }: { f: Factor }) {
   );
 }
 
+function deviationFromReference(f: Factor): string | null {
+  const ref = REFERENCE[f.name];
+  if (!ref) return null;
+  const limit = parseFloat(ref.replace(/[^0-9.]/g, ""));
+  const value = parseFloat(f.value.replace(/[^0-9.]/g, ""));
+  if (!Number.isFinite(limit) || !Number.isFinite(value) || limit === 0) return null;
+  const ratio = value / limit;
+  if (ref.trim().startsWith(">")) {
+    return ratio < 1 ? `${Math.round((1 - ratio) * 100)}% below floor` : null;
+  }
+  return ratio > 1 ? `${ratio.toFixed(1)}× limit` : null;
+}
+
 function FactorRow({ f }: { f: Factor }) {
   const up = signedValue(f) > 0;
+  const deviation = deviationFromReference(f);
   return (
     <div
       tabIndex={0}
       title={f.impact}
-      className="grid grid-cols-[minmax(10rem,1fr)_minmax(8rem,auto)_4rem] items-center gap-x-6 px-4 py-3 text-sm transition-colors hover:bg-muted/40 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+      className="grid grid-cols-[minmax(0,1fr)_auto_3.25rem] items-center gap-x-4 px-4 py-3 text-sm transition-colors hover:bg-muted/40 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
     >
       <div className="flex min-w-0 items-center gap-2.5">
         <span
@@ -41,11 +55,14 @@ function FactorRow({ f }: { f: Factor }) {
         />
         <span className="font-medium leading-snug">{f.name}</span>
       </div>
-      <span className="text-right font-mono text-[13px] tabular-nums text-foreground/90">
-        {f.value !== "present" ? f.value : "—"}
+      <span className="flex flex-col items-end leading-tight">
+        <span className="text-[13px] tabular-nums text-foreground/90">
+          {f.value !== "present" ? f.value : "—"}
+        </span>
         {REFERENCE[f.name] && (
-          <span className="ml-2 font-sans text-[11px] text-muted-foreground">
+          <span className="mt-0.5 text-[11px] text-muted-foreground">
             ref {REFERENCE[f.name]}
+            {deviation && <span className="ml-1.5 text-foreground/60">· {deviation}</span>}
           </span>
         )}
       </span>
@@ -64,12 +81,12 @@ export function ExtractedProfile({ factors }: { factors: Factor[] }) {
 
   return (
     <Card className="h-full border-border/70 shadow-soft">
-      <CardHeader>
+      <CardHeader className="px-7 pt-7 sm:px-8">
         <CardTitle className="font-heading text-xl font-semibold tracking-tight">
           Patient profile
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-7">
+      <CardContent className="space-y-7 px-7 pb-7 sm:px-8 sm:pb-8">
         {factors.length === 0 ? (
           <p className="text-sm text-muted-foreground">
             No recognizable factors found in the note.

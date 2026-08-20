@@ -1,4 +1,40 @@
-export const MODELS = ['gemini-3-flash-preview']
+import type { ModelInfo } from './contract'
+
+/**
+ * The models this product intends to offer. The backend reports which of them it
+ * can actually serve right now (GET /api/models); this list is only the fallback
+ * used when that endpoint is unreachable.
+ */
+export const MODEL_CATALOGUE: ModelInfo[] = [
+  {
+    id: 'gemini-3-flash-preview',
+    label: 'Gemini 3 Flash (preview)',
+    family: 'Gemini'
+  },
+  { id: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash', family: 'Gemini' },
+  {
+    id: 'google/medgemma-27b-it',
+    label: 'MedGemma 27B Instruct',
+    family: 'Self-hosted'
+  },
+  {
+    id: 'google/medgemma-4b-it',
+    label: 'MedGemma 4B Instruct',
+    family: 'Self-hosted'
+  },
+  {
+    id: 'm42-health/Llama3-Med42-8B',
+    label: 'Med42 8B',
+    family: 'Self-hosted'
+  },
+  {
+    id: 'meta-llama/Meta-Llama-3.1-8B-Instruct',
+    label: 'Llama 3.1 8B Instruct',
+    family: 'Self-hosted'
+  }
+]
+
+export const MODELS = MODEL_CATALOGUE.map(m => m.id)
 
 export const PRESETS: {
   label: string
