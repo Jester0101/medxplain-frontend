@@ -1,8 +1,11 @@
 "use client";
 import { motion } from "framer-motion";
-import { signedValue, type Factor } from "@/lib/contract";
+import { attributionMap, formatPp, signedValue, type Assessment } from "@/lib/contract";
 
-export function FactorBars({ factors }: { factors: Factor[] }) {
+export function FactorBars({ assessment }: { assessment: Assessment }) {
+  const factors = assessment.factors;
+  const phi = attributionMap(assessment);
+  const scale = [...phi.values()];
   const rows = [...factors].sort((a, b) => Math.abs(signedValue(b)) - Math.abs(signedValue(a)));
   const max = Math.max(...rows.map((f) => Math.abs(signedValue(f))), 0.001);
   if (rows.length === 0) {
@@ -39,7 +42,8 @@ export function FactorBars({ factors }: { factors: Factor[] }) {
             </div>
             <span className="text-sm font-mono font-medium tabular-nums" style={{ color }}>
               {up ? "+" : "−"}
-              {f.importance.toFixed(2)}
+              {(phi.get(f) ?? 0) >= 0 ? "+" : "−"}
+              {formatPp(phi.get(f) ?? 0, scale)}
             </span>
           </div>
         );

@@ -1,11 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { signedValue, type Factor } from "@/lib/contract";
+import { attributionMap, formatPp, signedValue, type Assessment, type Factor } from "@/lib/contract";
 import { highlightNote } from "@/lib/noteHighlight";
 
-export function NoteAttribution({ note, factors }: { note: string; factors: Factor[] }) {
+export function NoteAttribution({ note, assessment }: { note: string; assessment: Assessment }) {
   const [active, setActive] = useState<Factor | null>(null);
+  const factors = assessment.factors;
+  const phi = useMemo(() => attributionMap(assessment), [assessment]);
 
   const spans = useMemo(() => highlightNote(note, factors), [note, factors]);
   const max = useMemo(
@@ -83,7 +85,7 @@ export function NoteAttribution({ note, factors }: { note: string; factors: Fact
                 }}
               >
                 {signedValue(active) > 0 ? "+" : "−"}
-                {Math.abs(signedValue(active)).toFixed(2)}
+                {formatPp(phi.get(active) ?? 0, [...phi.values()])}
               </span>
             </div>
             <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">{active.impact}</p>

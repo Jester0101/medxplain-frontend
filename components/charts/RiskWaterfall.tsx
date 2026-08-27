@@ -1,37 +1,43 @@
 "use client";
 import { useId } from "react";
 import { motion } from "framer-motion";
-import { signedValue, type Assessment } from "@/lib/contract";
+import { attributionsOf, formatPp, type Assessment, type Factor } from "@/lib/contract";
 import { useMeasuredWidth } from "@/lib/useMeasuredWidth";
 
 const truncate = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
 
+const RESIDUAL_FACTOR: Factor = {
+  name: "Unexplained",
+  value: "",
+  category: "biomarker",
+  direction: "up",
+  importance: 0,
+  impact:
+    "Gap between the predicted risk and the sum of the listed contributions. The model's own numbers do not fully add up.",
+};
+
 export function RiskWaterfall({ assessment }: { assessment: Assessment }) {
   const uid = useId().replace(/[«»:]/g, "");
   const { ref, width } = useMeasuredWidth<HTMLDivElement>(600);
-  const base = assessment.baseValue ?? 0.06;
-  const parsedScore = parseFloat(assessment.riskScore);
-  const final =
-    assessment.riskValue ?? (Number.isFinite(parsedScore) ? parsedScore / 100 : base);
+  const { base, risk: final, items, residual, exact } = attributionsOf(assessment);
 
-  const rows = [...assessment.factors].sort(
-    (a, b) => Math.abs(signedValue(b)) - Math.abs(signedValue(a))
-  );
-  if (rows.length === 0) {
+  if (items.length === 0) {
     return <p className="text-sm text-muted-foreground">No factors to display.</p>;
   }
 
-  const hasShap = rows.some((f) => typeof f.shapValue === "number");
-  const rawSum = rows.reduce((s, f) => s + signedValue(f), 0);
-  const scale = hasShap ? 1 : rawSum !== 0 ? (final - base) / rawSum : 0;
+  const ordered = [...items].sort((a, b) => Math.abs(b.phi) - Math.abs(a.phi));
+  const contributions = exact
+    ? ordered
+    : [...ordered, { factor: RESIDUAL_FACTOR, phi: residual }];
 
   let cum = base;
-  const steps = rows.map((f) => {
-    const delta = signedValue(f) * scale;
+  const steps = contributions.map(({ factor, phi }) => {
     const from = cum;
-    cum += delta;
-    return { f, delta, from, to: cum };
+    cum += phi;
+    return { f: factor, delta: phi, from, to: cum };
   });
+
+  const scale = steps.map((s) => s.delta);
 
   const W = Math.max(260, Math.round(width));
   const compact = W < 460;
@@ -138,7 +144,7 @@ export function RiskWaterfall({ assessment }: { assessment: Assessment }) {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 + i * 0.05 }}
             >
-              {up ? "+" : "−"}{Math.abs(s.delta * 100).toFixed(1)}
+              {up ? "+" : "−"}{formatPp(s.delta, scale)}
             </motion.text>
           </g>
         );

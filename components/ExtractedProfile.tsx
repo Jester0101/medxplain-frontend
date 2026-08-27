@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { REFERENCE } from "@/lib/reference";
-import { signedValue, type Factor } from "@/lib/contract";
+import { attributionMap, formatPp, signedValue, type Assessment, type Factor } from "@/lib/contract";
 
 function headlineOf(factors: Factor[]): string {
   const age = parseInt(factors.find((f) => f.name === "Age")?.value ?? "", 10);
@@ -13,14 +13,13 @@ function headlineOf(factors: Factor[]): string {
   return "Patient";
 }
 
-function DeltaTag({ f }: { f: Factor }) {
-  const v = signedValue(f);
-  const up = v > 0;
+function DeltaTag({ f, phi, scale }: { f: Factor; phi: number; scale: number[] }) {
+  const up = signedValue(f) > 0;
   const color = up ? "var(--risk-up)" : "var(--risk-down)";
   return (
     <span className="font-mono text-xs tabular-nums" style={{ color }}>
       {up ? "+" : "−"}
-      {Math.abs(v).toFixed(2)}
+      {formatPp(phi, scale)}
     </span>
   );
 }
@@ -38,7 +37,7 @@ function deviationFromReference(f: Factor): string | null {
   return ratio > 1 ? `${ratio.toFixed(1)}× limit` : null;
 }
 
-function FactorRow({ f }: { f: Factor }) {
+function FactorRow({ f, phi, scale }: { f: Factor; phi: number; scale: number[] }) {
   const up = signedValue(f) > 0;
   const deviation = deviationFromReference(f);
   return (
@@ -67,13 +66,16 @@ function FactorRow({ f }: { f: Factor }) {
         )}
       </span>
       <span className="justify-self-end">
-        <DeltaTag f={f} />
+        <DeltaTag f={f} phi={phi} scale={scale} />
       </span>
     </div>
   );
 }
 
-export function ExtractedProfile({ factors }: { factors: Factor[] }) {
+export function ExtractedProfile({ assessment }: { assessment: Assessment }) {
+  const factors = assessment.factors;
+  const phi = attributionMap(assessment);
+  const scale = [...phi.values()];
   const biomarkers = factors.filter((f) => f.category === "biomarker");
   const conditions = factors.filter((f) => f.category === "comorbidity");
   const raises = factors.filter((f) => signedValue(f) > 0).length;
@@ -110,7 +112,7 @@ export function ExtractedProfile({ factors }: { factors: Factor[] }) {
                 </h3>
                 <div className="overflow-hidden rounded-xl border border-border/70 divide-y divide-border/70">
                   {biomarkers.map((f) => (
-                    <FactorRow key={f.name} f={f} />
+                    <FactorRow key={f.name} f={f} phi={phi.get(f) ?? 0} scale={scale} />
                   ))}
                 </div>
               </section>
@@ -123,7 +125,7 @@ export function ExtractedProfile({ factors }: { factors: Factor[] }) {
                 </h3>
                 <div className="overflow-hidden rounded-xl border border-border/70 divide-y divide-border/70">
                   {conditions.map((f) => (
-                    <FactorRow key={f.name} f={f} />
+                    <FactorRow key={f.name} f={f} phi={phi.get(f) ?? 0} scale={scale} />
                   ))}
                 </div>
               </section>

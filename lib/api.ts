@@ -39,11 +39,15 @@ export async function listModels(): Promise<ModelInfo[]> {
   }
 }
 
-export async function askAssessmentChat(req: ChatRequest): Promise<ChatResponse> {
+export async function askAssessmentChat(
+  req: ChatRequest,
+  signal?: AbortSignal
+): Promise<ChatResponse> {
   const res = await fetch(`${BASE}/api/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(req),
+    signal,
   });
   if (!res.ok) {
     const body = await res.json().catch(() => null);

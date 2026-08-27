@@ -132,13 +132,13 @@ export default function ResultsPage() {
                       </TabsTrigger>
                     </TabsList>
                     <TabsContent value="text" className="pt-6">
-                      <NoteAttribution note={note} factors={assessment.factors} />
+                      <NoteAttribution note={note} assessment={assessment} />
                     </TabsContent>
                     <TabsContent value="waterfall" className="pt-6">
                       <RiskWaterfall assessment={assessment} />
                     </TabsContent>
                     <TabsContent value="factors" className="pt-6">
-                      <FactorBars factors={assessment.factors} />
+                      <FactorBars assessment={assessment} />
                     </TabsContent>
                     <TabsContent value="force" className="pt-6">
                       <ForcePlot assessment={assessment} />
@@ -152,7 +152,7 @@ export default function ResultsPage() {
               variants={sectionVariants}
               className="grid items-start gap-7 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]"
             >
-              <ExtractedProfile factors={assessment.factors} />
+              <ExtractedProfile assessment={assessment} />
               <ClinicalSummary summary={assessment.summary} />
             </motion.div>
 
@@ -162,7 +162,7 @@ export default function ResultsPage() {
           </motion.div>
         </AnimatePresence>
       </main>
-      <AssessmentChat assessment={assessment} />
+      <AssessmentChat assessment={assessment} note={note} />
     </motion.div>
   );
 }

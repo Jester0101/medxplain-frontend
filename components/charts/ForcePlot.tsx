@@ -1,7 +1,7 @@
 "use client";
 import { useId, useState } from "react";
 import { motion } from "framer-motion";
-import { signedValue, type Assessment, type Factor } from "@/lib/contract";
+import { attributionMap, formatPp, signedValue, type Assessment, type Factor } from "@/lib/contract";
 import { useMeasuredWidth } from "@/lib/useMeasuredWidth";
 
 const truncate = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
@@ -14,6 +14,7 @@ export function ForcePlot({ assessment }: { assessment: Assessment }) {
   const { ref, width } = useMeasuredWidth<HTMLDivElement>(600);
 
   const factors = assessment.factors;
+  const phi = attributionMap(assessment);
   const ups = factors.filter((f) => signedValue(f) > 0)
     .sort((a, b) => Math.abs(signedValue(a)) - Math.abs(signedValue(b)));
   const downs = factors.filter((f) => signedValue(f) < 0)
@@ -137,7 +138,7 @@ export function ForcePlot({ assessment }: { assessment: Assessment }) {
             {active.f.impact}{" "}
             <span className="font-mono font-medium tabular-nums"
                   style={{ color: active.v > 0 ? "var(--risk-up)" : "var(--risk-down)" }}>
-              {active.v > 0 ? "+" : "−"}{Math.abs(active.v).toFixed(2)}
+              {active.v > 0 ? "+" : "−"}{formatPp(phi.get(active.f) ?? 0, [...phi.values()])}
             </span>
           </>
         ) : (

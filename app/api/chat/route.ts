@@ -4,7 +4,7 @@ import { explainAssessmentWithLLM } from "@/lib/llm";
 
 type Bucket = { count: number; resetAt: number };
 const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_MAX = 8;
+const RATE_LIMIT_MAX = 20;
 const buckets = new Map<string, Bucket>();
 
 function getClientId(req: Request): string {
@@ -25,24 +25,6 @@ function isRateLimited(clientId: string): boolean {
   return current.count > RATE_LIMIT_MAX;
 }
 
-function isInScopeQuestion(question: string): boolean {
-  const q = question.toLowerCase();
-  const outOfScope = [
-    "recommend",
-    "treatment",
-    "medication",
-    "prescribe",
-    "diagnose",
-    "diagnosis",
-    "what should i do",
-    "management",
-    "therapy",
-    "intervention",
-    "guideline",
-  ];
-  return !outOfScope.some((term) => q.includes(term));
-}
-
 export async function POST(req: Request) {
   const clientId = getClientId(req);
   if (isRateLimited(clientId)) {
@@ -54,35 +36,19 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: parsed.error.message }, { status: 400 });
   }
 
-  const { question, patient_context: patientContext } = parsed.data;
-  if (!isInScopeQuestion(question)) {
-    const answer =
-      "This question is outside the chat scope. I can only explain the provided risk score, listed risk drivers, and clinical summary.";
-    console.info("[chat] blocked_out_of_scope", {
-      clientId,
-      questionPreview: question.slice(0, 160),
-      riskScore: patientContext.risk_score,
-    });
-    return NextResponse.json({ answer, inScope: false });
-  }
+  const { question, patient_context: patientContext, history, model } = parsed.data;
 
   try {
-    const response = await explainAssessmentWithLLM(question, patientContext);
-    console.info("[chat] answered", {
-      clientId,
-      inScope: response.inScope,
-      questionPreview: question.slice(0, 160),
-      answerPreview: response.answer.slice(0, 220),
-      riskScore: patientContext.risk_score,
-    });
+    const response = await explainAssessmentWithLLM(question, patientContext, model, history ?? []);
+    console.info("[chat] answered", { inScope: response.inScope, turns: history?.length ?? 0 });
     return NextResponse.json(response);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
-    console.error("[chat] failed", { clientId, message });
+    console.error("[chat] failed", { message });
     if (message.includes("(429)")) {
       return NextResponse.json({ error: "LLM provider is rate limited. Please retry in a moment." }, { status: 429 });
     }
-    if (message.toLowerCase().includes("timeout")) {
+    if (message.toLowerCase().includes("timeout") || message.toLowerCase().includes("aborted")) {
       return NextResponse.json({ error: "Chat request timed out. Please try again." }, { status: 504 });
     }
     if (message.includes("contained no text") || message.includes("JSON")) {
