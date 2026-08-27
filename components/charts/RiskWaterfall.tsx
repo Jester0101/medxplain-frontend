@@ -3,8 +3,8 @@ import { useId } from "react";
 import { motion } from "framer-motion";
 import { attributionsOf, formatPp, type Assessment, type Factor } from "@/lib/contract";
 import { useMeasuredWidth } from "@/lib/useMeasuredWidth";
+import { truncate } from "@/lib/utils";
 
-const truncate = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
 
 const RESIDUAL_FACTOR: Factor = {
   name: "Unexplained",

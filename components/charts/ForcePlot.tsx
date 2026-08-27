@@ -3,8 +3,8 @@ import { useId, useState } from "react";
 import { motion } from "framer-motion";
 import { attributionMap, formatPp, signedValue, type Assessment, type Factor } from "@/lib/contract";
 import { useMeasuredWidth } from "@/lib/useMeasuredWidth";
+import { truncate } from "@/lib/utils";
 
-const truncate = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
 
 type Segment = { f: Factor; v: number; x: number; w: number };
 

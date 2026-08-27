@@ -5,6 +5,7 @@ import { MessageCircle, RotateCcw, Send, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
+import { RichText } from "@/components/chat/RichText";
 import { askAssessmentChat } from "@/lib/api";
 import { attributionsOf, baseValueOf, riskValueOf } from "@/lib/contract";
 import type { Assessment, ChatMessage, ChatPatientContext } from "@/lib/contract";
@@ -42,65 +43,6 @@ function toContext(assessment: Assessment, note: string): ChatPatientContext {
     clinical_note: note || undefined,
     clinical_summary: assessment.summary,
   };
-}
-
-function Inline({ text }: { text: string }) {
-  const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).filter(Boolean);
-  return (
-    <>
-      {parts.map((p, i) => {
-        if (p.startsWith("**") && p.endsWith("**")) {
-          return <strong key={i}>{p.slice(2, -2)}</strong>;
-        }
-        if (p.startsWith("`") && p.endsWith("`")) {
-          return (
-            <code key={i} className="rounded bg-foreground/8 px-1 py-0.5 font-mono text-[12px]">
-              {p.slice(1, -1)}
-            </code>
-          );
-        }
-        return <span key={i}>{p}</span>;
-      })}
-    </>
-  );
-}
-
-const BULLET = /^\s*(?:[-*•]|\d+[.)])\s+/;
-
-type Chunk = { kind: "p"; lines: string[] } | { kind: "ul"; lines: string[] };
-
-function chunk(text: string): Chunk[] {
-  const chunks: Chunk[] = [];
-  for (const line of text.trim().split("\n")) {
-    if (!line.trim()) continue;
-    const kind = BULLET.test(line) ? "ul" : "p";
-    const last = chunks[chunks.length - 1];
-    if (last && last.kind === kind) last.lines.push(line);
-    else chunks.push({ kind, lines: [line] });
-  }
-  return chunks;
-}
-
-function RichText({ text }: { text: string }) {
-  return (
-    <div className="space-y-2">
-      {chunk(text).map((c, ci) =>
-        c.kind === "ul" ? (
-          <ul key={ci} className="list-disc space-y-1 pl-4">
-            {c.lines.map((l, li) => (
-              <li key={li}>
-                <Inline text={l.replace(BULLET, "")} />
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p key={ci} className="whitespace-pre-wrap">
-            <Inline text={c.lines.join("\n")} />
-          </p>
-        )
-      )}
-    </div>
-  );
 }
 
 function TypingIndicator() {
