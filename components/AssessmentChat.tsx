@@ -174,8 +174,13 @@ export function AssessmentChat({
   useEffect(() => {
     const el = textareaRef.current;
     if (!el) return;
+    const style = getComputedStyle(el);
+    const borders =
+      parseFloat(style.borderTopWidth || "0") + parseFloat(style.borderBottomWidth || "0");
     el.style.height = "auto";
-    el.style.height = `${Math.min(el.scrollHeight, 140)}px`;
+    const content = el.scrollHeight + borders;
+    el.style.height = `${Math.min(content, 140)}px`;
+    el.style.overflowY = content > 140 ? "auto" : "hidden";
   }, [question, isOpen]);
 
   if (!assessment || !context) return null;

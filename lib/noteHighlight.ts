@@ -8,11 +8,19 @@ function escapeRegex(s: string): string {
 
 function aliasesFor(name: string): string[] {
   const aliases = [name];
-  const first = name.split(/[^A-Za-z0-9]+/)[0];
+
+  const parenthesised = name.match(/\(([A-Za-z][A-Za-z0-9-]{1,})\)/)?.[1];
+  if (parenthesised) aliases.push(parenthesised);
+
+  const withoutParens = name.replace(/\s*\([^)]*\)/g, "").trim();
+  if (withoutParens && withoutParens !== name) aliases.push(withoutParens);
+
+  const first = withoutParens.split(/[^A-Za-z0-9]+/)[0];
   if (first && first.length >= 3 && first === first.toUpperCase() && /[A-Z]/.test(first)) {
     aliases.push(first);
   }
-  return aliases;
+
+  return [...new Set(aliases)].sort((a, b) => b.length - a.length);
 }
 
 function patternsFor(f: Factor): RegExp[] {
@@ -48,10 +56,16 @@ function patternsFor(f: Factor): RegExp[] {
   }
 
   const stem: RegExp[] = [];
-  if (!/\s/.test(f.name) && f.name.length >= 5) {
-    const base = f.name.split(/[^A-Za-z0-9]+/)[0];
-    const source = base.length >= 5 ? base : f.name;
-    const cut = source.slice(0, Math.max(4, source.length - 3));
+  const firstWord = f.name.split(/[^A-Za-z0-9]+/)[0] ?? "";
+  const stemSource = /\s/.test(f.name)
+    ? firstWord.length >= 6
+      ? firstWord
+      : ""
+    : firstWord.length >= 5
+      ? firstWord
+      : f.name;
+  if (stemSource.length >= 5) {
+    const cut = stemSource.slice(0, Math.max(4, stemSource.length - 3));
     stem.push(new RegExp(`\\b${escapeRegex(cut)}\\w*\\b`, "i"));
   }
 

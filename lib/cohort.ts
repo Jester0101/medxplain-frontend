@@ -30,3 +30,27 @@ export function percentileOf(score: number, sortedRisks: number[]): number {
   }
   return Math.round((below / sortedRisks.length) * 100);
 }
+
+export type CohortFactor = { name: string; risk: number };
+
+export type CohortPatient = {
+  i: number;
+  risk: number;
+  event: number;
+  age: number | null;
+  sex: string | null;
+  factors: CohortFactor[];
+};
+
+export async function loadCohortPatients(): Promise<CohortPatient[]> {
+  const res = await fetch("/cohort-patients.json");
+  if (!res.ok) throw new Error(`Cohort patients unavailable (${res.status})`);
+  return res.json();
+}
+
+export function nearestPatient(score: number, patients: CohortPatient[]): CohortPatient | null {
+  if (patients.length === 0) return null;
+  return patients.reduce((best, p) =>
+    Math.abs(p.risk - score) < Math.abs(best.risk - score) ? p : best
+  );
+}
