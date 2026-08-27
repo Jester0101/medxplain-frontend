@@ -20,7 +20,6 @@ const ModelPredictionSchema = z.object({
 });
 export type ModelPrediction = z.infer<typeof ModelPredictionSchema>;
 
-/** Quick, short-timeout check so we never hang the request when the Python service is simply not running. */
 export async function isTrainedModelAvailable(): Promise<boolean> {
   try {
     const res = await fetch(`${RISK_MODEL_URL}/health`, { signal: AbortSignal.timeout(1500) });
@@ -28,7 +27,7 @@ export async function isTrainedModelAvailable(): Promise<boolean> {
     const data = await res.json();
     return data?.model_loaded === true;
   } catch {
-    return false; // service not running / unreachable -- not an error, just "not ready yet"
+    return false;
   }
 }
 
@@ -42,7 +41,6 @@ export function summarizeFactors(riskValue: number, factors: ModelPrediction["fa
   return s;
 }
 
-/** Throws on failure -- callers should already have checked isTrainedModelAvailable(). */
 export async function predictWithTrainedModel(
   features: Record<string, number | string | null>
 ): Promise<ModelPrediction> {

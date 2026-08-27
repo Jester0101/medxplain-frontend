@@ -3,13 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { CircleCheck, OctagonAlert, TriangleAlert } from "lucide-react";
-import { signedValue, type Assessment } from "@/lib/contract";
-
-function riskValueOf(a: Assessment): number {
-  if (typeof a.riskValue === "number") return a.riskValue;
-  const parsed = parseFloat(a.riskScore);
-  return Number.isFinite(parsed) ? parsed / 100 : 0;
-}
+import { riskLevelOf, riskValueOf, signedValue, type Assessment } from "@/lib/contract";
 
 const LEVELS = {
   low: { label: "Low risk", color: "var(--risk-low)", Icon: CircleCheck },
@@ -46,7 +40,7 @@ function useCountUp(target: number) {
 
 export function RiskHero({ assessment }: { assessment: Assessment }) {
   const risk = riskValueOf(assessment);
-  const level = risk > 0.2 ? "high" : risk > 0.1 ? "moderate" : "low";
+  const level = riskLevelOf(assessment);
   const { label, color, Icon } = LEVELS[level];
   const display = useCountUp(Math.round(risk * 100));
 

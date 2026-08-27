@@ -72,6 +72,31 @@ function FactorRow({ f, phi, scale }: { f: Factor; phi: number; scale: number[] 
   );
 }
 
+function FactorGroup({
+  title,
+  factors,
+  phi,
+  scale,
+}: {
+  title: string;
+  factors: Factor[];
+  phi: Map<Factor, number>;
+  scale: number[];
+}) {
+  return (
+    <section className="space-y-2.5">
+      <h3 className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/90">
+        {title}
+      </h3>
+      <div className="divide-y divide-border/70 overflow-hidden rounded-xl border border-border/70">
+        {factors.map((f) => (
+          <FactorRow key={f.name} f={f} phi={phi.get(f) ?? 0} scale={scale} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export function ExtractedProfile({ assessment }: { assessment: Assessment }) {
   const factors = assessment.factors;
   const phi = attributionMap(assessment);
@@ -82,7 +107,7 @@ export function ExtractedProfile({ assessment }: { assessment: Assessment }) {
   const lowers = factors.length - raises;
 
   return (
-    <Card className="h-full border-border/70 shadow-soft">
+    <Card className="border-border/70 shadow-soft">
       <CardHeader className="px-7 pt-7 sm:px-8">
         <CardTitle className="font-heading text-xl font-semibold tracking-tight">
           Patient profile
@@ -105,31 +130,24 @@ export function ExtractedProfile({ assessment }: { assessment: Assessment }) {
               </p>
             </div>
 
-            {biomarkers.length > 0 && (
-              <section className="space-y-2.5">
-                <h3 className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/90">
-                  Biomarkers
-                </h3>
-                <div className="overflow-hidden rounded-xl border border-border/70 divide-y divide-border/70">
-                  {biomarkers.map((f) => (
-                    <FactorRow key={f.name} f={f} phi={phi.get(f) ?? 0} scale={scale} />
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {conditions.length > 0 && (
-              <section className="space-y-2.5">
-                <h3 className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/90">
-                  Conditions
-                </h3>
-                <div className="overflow-hidden rounded-xl border border-border/70 divide-y divide-border/70">
-                  {conditions.map((f) => (
-                    <FactorRow key={f.name} f={f} phi={phi.get(f) ?? 0} scale={scale} />
-                  ))}
-                </div>
-              </section>
-            )}
+            <div className="grid items-start gap-7 lg:grid-cols-2">
+              {biomarkers.length > 0 && (
+                <FactorGroup
+                  title="Biomarkers"
+                  factors={biomarkers}
+                  phi={phi}
+                  scale={scale}
+                />
+              )}
+              {conditions.length > 0 && (
+                <FactorGroup
+                  title="Conditions"
+                  factors={conditions}
+                  phi={phi}
+                  scale={scale}
+                />
+              )}
+            </div>
           </>
         )}
       </CardContent>

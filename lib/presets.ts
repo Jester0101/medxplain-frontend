@@ -1,10 +1,5 @@
 import type { ModelInfo } from './contract'
 
-/**
- * The models this product intends to offer. The backend reports which of them it
- * can actually serve right now (GET /api/models); this list is only the fallback
- * used when that endpoint is unreachable.
- */
 export const MODEL_CATALOGUE: ModelInfo[] = [
   {
     id: 'gemini-3-flash-preview',

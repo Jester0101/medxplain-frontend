@@ -25,10 +25,6 @@ export async function assess(req: AssessRequest): Promise<Assessment> {
   return AssessmentSchema.parse(await res.json());
 }
 
-/**
- * Asks the backend which models it can serve. Falls back to the local catalogue
- * (all marked unavailable) so the picker still renders when the API is down.
- */
 export async function listModels(): Promise<ModelInfo[]> {
   try {
     const res = await fetch(`${BASE}/api/models`);

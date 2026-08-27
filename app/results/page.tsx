@@ -148,12 +148,12 @@ export default function ResultsPage() {
               </Card>
             </motion.div>
 
-            <motion.div
-              variants={sectionVariants}
-              className="grid items-start gap-7 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]"
-            >
+            <motion.div variants={sectionVariants}>
+              <ClinicalSummary assessment={assessment} />
+            </motion.div>
+
+            <motion.div variants={sectionVariants}>
               <ExtractedProfile assessment={assessment} />
-              <ClinicalSummary summary={assessment.summary} />
             </motion.div>
 
             <motion.div variants={sectionVariants}>

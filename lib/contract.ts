@@ -27,9 +27,11 @@ export const AssessmentSchema = z.object({
 });
 export type Assessment = z.infer<typeof AssessmentSchema>;
 
+export const MAX_NOTE_LENGTH = 8000;
+
 export const AssessRequestSchema = z.object({
-  note: z.string().min(1),
-  model: z.string().optional(),
+  note: z.string().min(1).max(MAX_NOTE_LENGTH),
+  model: z.string().max(120).optional(),
 });
 export type AssessRequest = z.infer<typeof AssessRequestSchema>;
 
@@ -40,23 +42,23 @@ export const ChatMessageSchema = z.object({
 export type ChatMessage = z.infer<typeof ChatMessageSchema>;
 
 export const ChatAttributionSchema = z.object({
-  name: z.string(),
-  value: z.string(),
+  name: z.string().max(200),
+  value: z.string().max(200),
   contribution: z.number(),
-  impact: z.string(),
+  impact: z.string().max(800),
 });
 export type ChatAttribution = z.infer<typeof ChatAttributionSchema>;
 
 export const ChatPatientContextSchema = z.object({
-  patient_profile: z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()])),
-  risk_score: z.string(),
+  patient_profile: z.record(z.string().max(200), z.union([z.string().max(400), z.number(), z.boolean(), z.null()])),
+  risk_score: z.string().max(20),
   risk_value: z.number().optional(),
   base_value: z.number().optional(),
-  risk_drivers_positive: z.array(z.string()),
-  risk_drivers_negative: z.array(z.string()),
-  attributions: z.array(ChatAttributionSchema).optional(),
-  clinical_note: z.string().optional(),
-  clinical_summary: z.string(),
+  risk_drivers_positive: z.array(z.string().max(600)).max(40),
+  risk_drivers_negative: z.array(z.string().max(600)).max(40),
+  attributions: z.array(ChatAttributionSchema).max(40).optional(),
+  clinical_note: z.string().max(MAX_NOTE_LENGTH).optional(),
+  clinical_summary: z.string().max(4000),
 });
 export type ChatPatientContext = z.infer<typeof ChatPatientContextSchema>;
 
@@ -64,7 +66,7 @@ export const ChatRequestSchema = z.object({
   question: z.string().min(2).max(1000),
   patient_context: ChatPatientContextSchema,
   history: z.array(ChatMessageSchema).max(20).optional(),
-  model: z.string().optional(),
+  model: z.string().max(120).optional(),
 });
 export type ChatRequest = z.infer<typeof ChatRequestSchema>;
 
@@ -157,4 +159,13 @@ export function formatPp(value: number, scale: number[]): string {
   const max = Math.max(0, ...scale.map((v) => Math.abs(v)));
   const decimals = max * 100 < 1 ? 2 : 1;
   return (Math.abs(value) * 100).toFixed(decimals);
+}
+
+export type RiskLevel = "low" | "moderate" | "high";
+
+export function riskLevelOf(a: Assessment): RiskLevel {
+  const risk = riskValueOf(a);
+  if (risk > 0.2) return "high";
+  if (risk > 0.1) return "moderate";
+  return "low";
 }

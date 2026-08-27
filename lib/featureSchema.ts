@@ -1,13 +1,5 @@
 import type { Category } from "./contract";
 
-/**
- * Mirrors backend/src/medicalbigdata/serving/schema.py -- keep both in sync.
- *
- * This is the canonical list of features the trained risk model understands.
- * The LLM extraction step (lib/llm.ts) asks for values against exactly these
- * ids, so whatever it finds in a clinical note can be sent straight to the
- * Python /predict endpoint.
- */
 export type FeatureSpec = {
   id: string;
   label: string;
@@ -20,7 +12,6 @@ const DEMOGRAPHIC_FEATURES: FeatureSpec[] = [
   { id: "sex", label: "Sex", unit: "1=male, 2=female", category: "demographic" },
 ];
 
-// code: [label, unit] -- copied from medicalbigdata.settings.luric.LAB_MARKERS
 const LAB_MARKERS: Record<string, [string, string]> = {
   pbnpl1: ["NT-proBNP", "ng/ml"],
   tropt: ["troponin T", "μg/L"],
@@ -70,7 +61,6 @@ const LAB_MARKERS: Record<string, [string, string]> = {
   folicac: ["folate", "μg/L"],
 };
 
-// code: label -- copied from medicalbigdata.settings.luric.COMORBIDITIES
 const COMORBIDITIES: Record<string, string> = {
   dm1yn: "type-1 diabetes",
   dm2yn: "type-2 diabetes",
