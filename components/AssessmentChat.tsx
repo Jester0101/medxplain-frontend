@@ -9,8 +9,9 @@ import { RichText } from "@/components/chat/RichText";
 import { askAssessmentChat } from "@/lib/api";
 import { attributionsOf, baseValueOf, riskValueOf } from "@/lib/contract";
 import type { Assessment, ChatMessage, ChatPatientContext } from "@/lib/contract";
+import { revealDurationMs } from "@/lib/textReveal";
 
-type Message = ChatMessage & { failed?: boolean };
+type Message = ChatMessage & { failed?: boolean; isStreaming?: boolean; animated?: boolean };
 
 const SUGGESTIONS = [
   "Which factor moved the score the most, and by how much?",
@@ -72,6 +73,7 @@ export function AssessmentChat({
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const revealTimeoutRef = useRef<number | null>(null);
   const openRef = useRef(isOpen);
 
   const context = useMemo(
@@ -111,7 +113,13 @@ export function AssessmentChat({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 
-  useEffect(() => () => abortRef.current?.abort(), []);
+  useEffect(
+    () => () => {
+      abortRef.current?.abort();
+      if (revealTimeoutRef.current !== null) window.clearTimeout(revealTimeoutRef.current);
+    },
+    []
+  );
 
   useEffect(() => {
     const el = textareaRef.current;
@@ -127,11 +135,48 @@ export function AssessmentChat({
 
   if (!assessment || !context) return null;
 
+  function stopRevealing() {
+    if (revealTimeoutRef.current !== null) {
+      window.clearTimeout(revealTimeoutRef.current);
+      revealTimeoutRef.current = null;
+    }
+  }
+
+  function revealAnswer(answer: string) {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const totalWords = answer.match(/\S+/g)?.length ?? 0;
+    const duration = reducedMotion ? 0 : revealDurationMs(totalWords);
+
+    setMessages((prev) => [
+      ...prev,
+      { role: "assistant", content: answer, isStreaming: duration > 0, animated: duration > 0 },
+    ]);
+
+    function finish() {
+      revealTimeoutRef.current = null;
+      setMessages((prev) =>
+        prev.map((message, index) =>
+          index === prev.length - 1 ? { ...message, isStreaming: false } : message
+        )
+      );
+      setIsLoading(false);
+      if (!openRef.current) setUnreadCount((prev) => prev + 1);
+    }
+
+    if (duration === 0) {
+      finish();
+      return;
+    }
+
+    revealTimeoutRef.current = window.setTimeout(finish, duration + 60);
+  }
+
   async function send(text: string, priorMessages: Message[]) {
     const trimmed = text.trim();
     if (!trimmed || !context) return;
 
     abortRef.current?.abort();
+    stopRevealing();
     const controller = new AbortController();
     abortRef.current = controller;
 
@@ -155,8 +200,7 @@ export function AssessmentChat({
         },
         controller.signal
       );
-      setMessages((prev) => [...prev, { role: "assistant", content: res.answer }]);
-      if (!openRef.current) setUnreadCount((prev) => prev + 1);
+      revealAnswer(res.answer);
     } catch (err) {
       if (controller.signal.aborted) return;
       setMessages((prev) =>
@@ -165,7 +209,7 @@ export function AssessmentChat({
       setQuestion(trimmed);
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
-      if (!controller.signal.aborted) setIsLoading(false);
+      if (!controller.signal.aborted && revealTimeoutRef.current === null) setIsLoading(false);
     }
   }
 
@@ -183,6 +227,7 @@ export function AssessmentChat({
 
   function reset() {
     abortRef.current?.abort();
+    stopRevealing();
     setMessages([]);
     setError(null);
     setIsLoading(false);
@@ -251,10 +296,24 @@ export function AssessmentChat({
                       className={`max-w-[82%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed ${
                         m.role === "user"
                           ? `rounded-br-sm bg-foreground text-background ${m.failed ? "opacity-45" : ""}`
-                          : "rounded-bl-sm bg-black/5 text-foreground dark:bg-white/8"
+                          : `rounded-bl-sm bg-black/5 text-foreground dark:bg-white/8 ${
+                              m.isStreaming ? "chat-answer-streaming" : "chat-answer-enter"
+                            }`
                       }`}
                     >
-                      {m.role === "assistant" ? <RichText text={m.content} /> : m.content}
+                      {m.role === "assistant" ? (
+                        <>
+                          <RichText text={m.content} animate={m.animated} />
+                          {m.isStreaming && (
+                            <span
+                              aria-label="Generating response"
+                              className="chat-answer-cursor ml-0.5 inline-block h-3.5 w-0.5 bg-current align-[-2px]"
+                            />
+                          )}
+                        </>
+                      ) : (
+                        m.content
+                      )}
                     </div>
                   </div>
                 ))}

@@ -1,5 +1,6 @@
 'use client'
 
+import { useMemo } from 'react'
 import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -13,13 +14,19 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { PRESETS } from '@/lib/presets'
+import { PATIENT_PRESETS } from '@/lib/presets'
 import type { ModelInfo } from '@/lib/contract'
 
-const PRESET_DOT: Record<'low' | 'moderate' | 'high', string> = {
+const RISK_DOT: Record<'low' | 'moderate' | 'high', string> = {
   low: 'bg-emerald-500',
   moderate: 'bg-amber-500',
   high: 'bg-rose-500'
+}
+
+const RISK_LABEL: Record<'low' | 'moderate' | 'high', string> = {
+  low: 'Low risk',
+  moderate: 'Moderate risk',
+  high: 'High risk'
 }
 
 type Props = {
@@ -45,7 +52,11 @@ export function PatientIntake({
   const families = Array.from(
     new Set(models.map(m => m.family ?? 'Models'))
   )
-  const hasUnavailable = models.some(m => m.available === false)
+
+  const selectedPatientId = useMemo(() => {
+    const match = PATIENT_PRESETS.find(p => p.note === note)
+    return match ? String(match.id) : ''
+  }, [note])
 
   return (
     <Card className='border-border/70 shadow-soft'>
@@ -88,11 +99,6 @@ export function PatientIntake({
               ))}
             </SelectContent>
           </Select>
-          {hasUnavailable && (
-            <p className='text-[12px] leading-relaxed text-muted-foreground'>
-              Greyed-out models become selectable once their backend is connected.
-            </p>
-          )}
         </div>
 
         <div className='space-y-2.5'>
@@ -114,21 +120,48 @@ export function PatientIntake({
           />
         </div>
 
-        <div className='flex flex-wrap items-center gap-2.5 pt-1'>
-          <span className='text-xs text-muted-foreground'>Examples:</span>
-          {PRESETS.map(p => (
-            <button
-              key={p.label}
-              type='button'
-              onClick={() => onNoteChange(p.note)}
-              className='inline-flex min-h-9 items-center gap-2 rounded-full border bg-background px-4 py-2 text-sm font-normal transition-all hover:bg-muted/70 active:scale-[0.96] focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none'>
-              <span
-                aria-hidden
-                className={`size-2 rounded-full ${PRESET_DOT[p.risk]}`}
-              />
-              {p.label}
-            </button>
-          ))}
+        <div className='space-y-2.5'>
+          <label
+            htmlFor='patient-example'
+            className='text-[13px] font-medium text-muted-foreground'>
+            Example patients
+          </label>
+          <Select
+            value={selectedPatientId}
+            onValueChange={value => {
+              const preset = PATIENT_PRESETS.find(
+                p => String(p.id) === value
+              )
+              if (preset) onNoteChange(preset.note)
+            }}>
+            <SelectTrigger
+              id='patient-example'
+              className='w-full rounded-xl transition-shadow focus-visible:border-[color-mix(in_srgb,var(--focus)_55%,transparent)] focus-visible:ring-4 focus-visible:ring-[color-mix(in_srgb,var(--focus)_18%,transparent)]'>
+              <SelectValue placeholder='Load a real patient profile…' />
+            </SelectTrigger>
+            <SelectContent>
+              {(['low', 'moderate', 'high'] as const).map(level => {
+                const group = PATIENT_PRESETS.filter(p => p.risk === level)
+                if (group.length === 0) return null
+                return (
+                  <SelectGroup key={level}>
+                    <SelectLabel className='flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/90'>
+                      <span
+                        aria-hidden
+                        className={`size-2 rounded-full ${RISK_DOT[level]}`}
+                      />
+                      {RISK_LABEL[level]}
+                    </SelectLabel>
+                    {group.map(p => (
+                      <SelectItem key={p.id} value={String(p.id)}>
+                        {p.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                )
+              })}
+            </SelectContent>
+          </Select>
         </div>
 
         <Button

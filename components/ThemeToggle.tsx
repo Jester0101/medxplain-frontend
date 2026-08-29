@@ -29,7 +29,7 @@ export function ThemeToggle() {
           initial={{ y: -18, opacity: 0, rotate: -90 }}
           animate={{ y: 0, opacity: 1, rotate: 0 }}
           exit={{ y: 18, opacity: 0, rotate: 90 }}
-          transition={{ duration: 0.25, ease: "easeOut" }}
+          transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
           className="flex items-center justify-center"
         >
           {isDark ? <Sun /> : <Moon />}

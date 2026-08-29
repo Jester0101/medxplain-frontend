@@ -66,37 +66,48 @@ export function NoteAttribution({ note, assessment }: { note: string; assessment
         })}
       </p>
 
-      <div className="min-h-[4.25rem] rounded-xl border border-border/60 bg-[color-mix(in_srgb,var(--foreground)_3%,transparent)] px-4 py-3">
-        {active ? (
-          <>
-            <div className="flex items-baseline justify-between gap-3">
-              <span className="text-[15px] font-medium">
-                {active.name}
-                {active.value !== "present" && (
-                  <span className="ml-1.5 font-normal text-muted-foreground tabular-nums">
-                    {active.value}
-                  </span>
-                )}
-              </span>
-              <span
-                className="shrink-0 text-[13px] font-semibold tabular-nums"
-                style={{
-                  color: `color-mix(in srgb, ${signedValue(active) > 0 ? "var(--risk-up)" : "var(--risk-down)"} 82%, var(--foreground))`,
-                }}
-              >
-                {signedValue(active) > 0 ? "+" : "−"}
-                {formatPp(phi.get(active) ?? 0, [...phi.values()])}
-              </span>
-            </div>
-            <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">{active.impact}</p>
-          </>
-        ) : (
+      <div className="grid min-h-[4.25rem] rounded-xl border border-border/60 bg-[color-mix(in_srgb,var(--foreground)_3%,transparent)] px-4 py-3">
+        <div
+          className="col-start-1 row-start-1 transition-opacity duration-150"
+          style={{ opacity: active ? 1 : 0, pointerEvents: active ? "auto" : "none" }}
+          aria-hidden={!active}
+        >
+          {active && (
+            <>
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="text-[15px] font-medium">
+                  {active.name}
+                  {active.value !== "present" && (
+                    <span className="ml-1.5 font-normal text-muted-foreground tabular-nums">
+                      {active.value}
+                    </span>
+                  )}
+                </span>
+                <span
+                  className="shrink-0 text-[13px] font-semibold tabular-nums"
+                  style={{
+                    color: `color-mix(in srgb, ${signedValue(active) > 0 ? "var(--risk-up)" : "var(--risk-down)"} 82%, var(--foreground))`,
+                  }}
+                >
+                  {signedValue(active) > 0 ? "+" : "−"}
+                  {formatPp(phi.get(active) ?? 0, [...phi.values()])}
+                </span>
+              </div>
+              <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">{active.impact}</p>
+            </>
+          )}
+        </div>
+        <div
+          className="col-start-1 row-start-1 transition-opacity duration-150"
+          style={{ opacity: active ? 0 : 1, pointerEvents: active ? "none" : "auto" }}
+          aria-hidden={!!active}
+        >
           <p className="text-[13px] leading-relaxed text-muted-foreground">
             {matched > 0
               ? `${matched} phrases were matched to risk factors. Point at one to read why it counted.`
               : "No phrases in this note matched the extracted factors."}
           </p>
-        )}
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-x-6 gap-y-2 text-[13px] text-muted-foreground">

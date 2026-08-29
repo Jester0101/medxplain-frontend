@@ -9,7 +9,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "DoctorSHAP — Risk score & factor attribution",
+  title: "MedXplain — Risk score & factor attribution",
   description:
     "Send a clinical note, get a 1-year cardiovascular risk score with SHAP-style factor attribution.",
 };

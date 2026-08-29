@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { BrandMark } from "@/components/BrandMark";
+
 import { PatientIntake } from "@/components/PatientIntake";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { listModels } from "@/lib/api";
@@ -46,10 +46,6 @@ export default function Home() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.25 }}
     >
-      <div className="fixed left-4 top-4 z-50 sm:left-6 sm:top-6">
-        <BrandMark />
-      </div>
-
       <div className="fixed right-4 top-4 z-50 sm:right-6 sm:top-6">
         <ThemeToggle />
       </div>

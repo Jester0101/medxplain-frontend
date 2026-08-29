@@ -232,6 +232,41 @@ body {
   animation: tab-in 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+@keyframes chat-answer-enter {
+  from { opacity: 0; transform: translateY(5px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes chat-cursor {
+  0%, 42% { opacity: 1; transform: scaleY(1); }
+  52%, 100% { opacity: 0.18; transform: scaleY(0.72); }
+}
+
+.chat-answer-enter,
+.chat-answer-streaming {
+  animation: chat-answer-enter 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.chat-answer-streaming {
+  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--foreground) 18%, transparent);
+}
+
+.chat-answer-cursor {
+  animation: chat-cursor 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  transform-origin: center;
+}
+
+@keyframes word-in {
+  from { opacity: 0; transform: translateY(5px); filter: blur(3px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+.chat-word {
+  display: inline-block;
+  opacity: 0;
+  animation: word-in 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {

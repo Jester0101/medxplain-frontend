@@ -87,7 +87,7 @@ export function ForcePlot({ assessment }: { assessment: Assessment }) {
                 aria-label={`${s.f.name}: ${s.f.impact}`}
                 style={{
                   opacity: dimmed ? 0.4 : 1,
-                  transition: "opacity 120ms ease",
+                  transition: "opacity 150ms ease",
                 }}
               >
                 <motion.rect
@@ -129,22 +129,33 @@ export function ForcePlot({ assessment }: { assessment: Assessment }) {
         </motion.g>
       </svg>
 
-      <p className="h-12 overflow-hidden text-sm leading-relaxed text-muted-foreground">
-        {active ? (
-          <>
-            <b className="capitalize text-foreground">{active.f.name}</b>
-            {active.f.value !== "present" ? ` (${active.f.value})` : ""}
-            {" — "}
-            {active.f.impact}{" "}
-            <span className="font-mono font-medium tabular-nums"
-                  style={{ color: active.v > 0 ? "var(--risk-up)" : "var(--risk-down)" }}>
-              {active.v > 0 ? "+" : "−"}{formatPp(phi.get(active.f) ?? 0, [...phi.values()])}
-            </span>
-          </>
-        ) : (
-          "Hover or focus a segment to see its contribution."
-        )}
-      </p>
+      <div className="grid h-12">
+        <div
+          className="col-start-1 row-start-1 text-sm leading-relaxed text-muted-foreground transition-opacity duration-150"
+          style={{ opacity: active ? 1 : 0, pointerEvents: active ? "auto" : "none" }}
+          aria-hidden={!active}
+        >
+          {active && (
+            <p>
+              <b className="capitalize text-foreground">{active.f.name}</b>
+              {active.f.value !== "present" ? ` (${active.f.value})` : ""}
+              {" — "}
+              {active.f.impact}{" "}
+              <span className="font-mono font-medium tabular-nums"
+                    style={{ color: active.v > 0 ? "var(--risk-up)" : "var(--risk-down)" }}>
+                {active.v > 0 ? "+" : "−"}{formatPp(phi.get(active.f) ?? 0, [...phi.values()])}
+              </span>
+            </p>
+          )}
+        </div>
+        <p
+          className="col-start-1 row-start-1 text-sm leading-relaxed text-muted-foreground transition-opacity duration-150"
+          style={{ opacity: active ? 0 : 1, pointerEvents: active ? "none" : "auto" }}
+          aria-hidden={!!active}
+        >
+          Hover or focus a segment to see its contribution.
+        </p>
+      </div>
     </div>
   );
 }
